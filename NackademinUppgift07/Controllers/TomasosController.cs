@@ -32,7 +32,19 @@ namespace NackademinUppgift07.Controllers
 		    Matratt maträtt = await context.Matratt
 				.SingleOrDefaultAsync(m => m.MatrattId == id);
 
+			if (maträtt != null)
+				SessionAddToCart(maträtt);
+
 		    return RedirectToAction("Index");
 	    }
+
+	    private void SessionAddToCart(Matratt maträtt)
+	    {
+		    
+	    }
+
+	    //private async Task<List<Matratt>> SessionLoadCart()
+	    //{ 
+	    //}
     }
 }

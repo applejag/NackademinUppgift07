@@ -29,6 +29,10 @@ namespace NackademinUppgift07
 
 	        services.AddDbContext<TomasosContext>(options =>
 		        options.UseSqlServer(Configuration.GetConnectionString("Tomasos")));
+
+	        services.AddSession();
+
+	        services.AddDistributedMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +42,8 @@ namespace NackademinUppgift07
             {
                 app.UseDeveloperExceptionPage();
             }
+
+	        app.UseSession();
 
 	        app.UseStaticFiles();
 
