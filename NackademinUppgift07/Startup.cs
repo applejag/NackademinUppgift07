@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NackademinUppgift07.AuthData;
 using NackademinUppgift07.Models;
 
 namespace NackademinUppgift07
@@ -29,6 +31,13 @@ namespace NackademinUppgift07
 
 	        services.AddDbContext<TomasosContext>(options =>
 		        options.UseSqlServer(Configuration.GetConnectionString("Tomasos")));
+
+	        services.AddDbContext<AuthContext>(options =>
+		        options.UseSqlServer(Configuration.GetConnectionString("Auth")));
+
+	        services.AddIdentity<User, IdentityRole>()
+		        .AddEntityFrameworkStores<AuthContext>()
+		        .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +47,8 @@ namespace NackademinUppgift07
             {
                 app.UseDeveloperExceptionPage();
             }
+
+	        app.UseAuthentication();
 
 	        app.UseStaticFiles();
 
