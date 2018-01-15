@@ -1,0 +1,42 @@
+﻿
+fieldset legend {
+	font-weight: bold;
+}
+
+form span {
+	color: red;
+	display: block;
+	padding: 0 10%;
+}
+
+form label {
+	padding: 0 10%;
+	display: block;
+}
+
+form input {
+	width: 80%;
+	margin: 0 auto;
+	display: block;
+	padding: 0.5em;
+	border: 1px solid lightgray;
+	border-bottom: 3px solid lightgray;
+	border-radius: 0.5em;
+}
+
+form input:focus {
+	border-color: #666;
+	outline: none;
+}
+
+form input[type="submit"] {
+	padding: 0.5em;
+	background-color: beige;
+	color: #666;
+}
+
+form input[type="submit"]:hover {
+	color: #222;
+	background-color: beige;
+	border-color: #666;
+}

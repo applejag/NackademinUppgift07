@@ -3,22 +3,23 @@
 @{
     ViewData["Title"] = "Tomasos";
 	Layout = "~/Views/_LayoutMain.cshtml";
-	Kund kund = ViewBag.Kund;
 }
 
-<article>
-	@foreach (Matratt mat in Model)
+@foreach (Matratt mat in Model)
 	{
-		<section>
-			<div><h2>@mat.MatrattNamn</h2></div>
-			<div>@mat.Pris.ToString("C")</div>
-			<div>
-				<a asp-action="AddToCart" asp-route-id="@mat.MatrattId">Lägg till i kundvagn</a>
+		<section class="mat">
+			<div class="mat-head">
+				<h2 class="mat-name">@mat.MatrattNamn <span class="mat-type">@mat.MatrattTypNavigation.Beskrivning</span></h2>
+				<div class="mat-head-right">
+					<div class="mat-price">@mat.Pris.ToString("C")</div>
+					<div class="mat-add">
+						<a asp-action="AddToCart" asp-route-id="@mat.MatrattId">Lägg till i kundvagn</a>
+					</div>
+				</div>
 			</div>
-			<div>
-				<div>@mat.Beskrivning</div>
-				<div>
-					<strong>Ingredienser:</strong>
+			<div class="mat-body">
+				<div class="mat-ingredients">
+					<strong>Ingredienser</strong>
 					<ul>
 						@foreach (MatrattProdukt nav in mat.MatrattProdukt)
 						{
@@ -26,7 +27,7 @@
 						}
 					</ul>
 				</div>
+				<div class="mat-desc">@mat.Beskrivning</div>
 			</div>
 		</section>
 	}
-</article>

@@ -1,0 +1,20 @@
+﻿
+table {
+	width: 100%;
+}
+
+th {
+	text-align: left;
+}
+
+thead th {
+	border-bottom: 1px solid lightgray;
+}
+
+tfoot th {
+	border-top: 1px solid lightgray;
+}
+
+.cart-number {
+	font-family: Courier New, Courier, monospace;
+}

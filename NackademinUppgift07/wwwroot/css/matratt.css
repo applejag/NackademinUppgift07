@@ -1,0 +1,58 @@
+﻿
+.mat {
+	position: relative;
+}
+
+.mat-name {
+	font-size: xx-large;
+	margin: 0.2em;
+	display: inline-block;
+}
+
+.mat-type {
+	display: inline-block;
+	color: gray;
+	font-size: 75%;
+	font-style: italic;
+}
+
+.mat-price {
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+	font-size: large;
+	text-align: right;
+}
+
+.mat-add {
+	text-align: right;
+}
+
+.mat-head {
+	border-bottom: 3px dashed lightgray;
+	overflow: hidden;
+}
+
+.mat-head-right {
+	float: right;
+	margin: 0.2em;
+}
+
+.mat-body {
+	overflow: hidden;
+}
+
+.mat-desc {
+	display: inline;
+}
+
+.mat-ingredients {
+	float: right;
+	display: inline-block;
+}
+
+.mat-ingredients > ul {
+	margin: 0.2em 0 0 0;
+}
+
+.mat-ingredients > ul > li {
+	font-size: small;
+}

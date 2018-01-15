@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+	Kund kund = ViewBag.Kund;
+	List<Matratt> cart = ViewBag.Cart;
+}
+
+<!DOCTYPE html>
 <html lang="sv">
 <head>
 	<meta charset="UTF-8">
@@ -12,7 +17,30 @@
 	<link asp-href-include="css/*.css" rel="stylesheet" />
 </head>
 <body>
-	<h1>@ViewData["Title"]</h1>
-@RenderBody()
+<header>
+	<h1>Tomasos</h1>
+	<h2>@ViewData["Title"]</h2>
+</header>
+<nav>
+	<ul>
+		<li><a asp-controller="Tomasos" asp-action="Index">Maträtter</a></li>
+		@if (kund != null)
+		{
+			<li><a asp-controller="Auth" asp-action="Index">Profil</a></li>
+			<li><a asp-controller="Auth" asp-action="Logout">Logga ut</a></li>
+		}
+		else
+		{
+			<li><a asp-controller="Auth" asp-action="Login">Logga in</a></li>
+		}
+		@if (cart?.Count > 0)
+		{
+			<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cart.Count rätt@(cart.Count == 1 ? "" : "er"))</a></li>
+		}
+	</ul>
+</nav>
+<article>
+	@RenderBody()
+</article>
 </body>
 </html>

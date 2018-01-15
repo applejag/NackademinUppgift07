@@ -20,6 +20,7 @@ namespace NackademinUppgift07.Controllers
 		public async Task<IActionResult> Index()
 		{
 			Kund kund = await AuthGetCurrentUser();
+			ViewBag.Kund = kund;
 
 			if (kund == null)
 	            return RedirectToAction("Login");
@@ -32,6 +33,7 @@ namespace NackademinUppgift07.Controllers
 	    public async Task<IActionResult> Index(ViewKund changed)
 		{
 			Kund kund = await AuthGetCurrentUser();
+			ViewBag.Kund = kund;
 
 			if (kund == null)
 				return RedirectToAction("Login");
@@ -63,9 +65,13 @@ namespace NackademinUppgift07.Controllers
 		}
 
 		[HttpGet]
-	    public IActionResult Login()
+	    public async Task<IActionResult> Login()
 	    {
-		    return View();
+		    Kund kund = await AuthGetCurrentUser();
+		    if (kund != null)
+			    return RedirectToAction("Index");
+
+			return View();
 	    }
 
 		[HttpPost]
@@ -100,16 +106,22 @@ namespace NackademinUppgift07.Controllers
 		}
 
 		[HttpGet]
-	    public IActionResult Register()
-	    {
-		    return View();
-	    }
+	    public async Task<IActionResult> Register()
+		{
+			if (await AuthGetCurrentUser() != null)
+				return RedirectToAction("Index");
+
+			return View();
+		}
 
 	    [HttpPost]
 	    [AutoValidateAntiforgeryToken]
 	    public async Task<IActionResult> Register(Kund kund)
 	    {
-		    if (!ModelState.IsValid)
+		    if (await AuthGetCurrentUser() != null)
+			    return RedirectToAction("Index");
+
+			if (!ModelState.IsValid)
 				return View(kund);
 
 		    context.Kund.Add(kund);
@@ -122,6 +134,8 @@ namespace NackademinUppgift07.Controllers
 
 	    public IActionResult Logout()
 	    {
+			AuthLogout();
+
 		    return RedirectToAction("Index", "Tomasos");
 	    }
 		#endregion

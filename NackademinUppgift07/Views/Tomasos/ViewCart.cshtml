@@ -32,9 +32,9 @@
 		{
 			<tr>
 				<td>@group.Maträtt.MatrattNamn <i>(@group.Maträtt.MatrattTypNavigation.Beskrivning)</i></td>
-				<td>@group.Count.ToString("F2")</td>
-				<td>@group.Maträtt.Pris.ToString("C")</td>
-				<td>@((group.Maträtt.Pris * group.Count).ToString("C"))</td>
+				<td class="cart-number">@group.Count.ToString("F2")</td>
+				<td class="cart-number">@group.Maträtt.Pris.ToString("C")</td>
+				<td class="cart-number">@((group.Maträtt.Pris * group.Count).ToString("C"))</td>
 			</tr>
 		}
 	}
@@ -42,9 +42,9 @@
 	<tfoot>
 	<tr>
 		<th>Summa</th>
-		<th>@Model.Count.ToString("F2")</th>
+		<th class="cart-number">@Model.Count.ToString("F2")</th>
 		<th></th>
-		<th>@Model.Sum(m => m.Pris).ToString("C")</th>
+		<th class="cart-number">@Model.Sum(m => m.Pris).ToString("C")</th>
 	</tr>
 	</tfoot>
 </table>

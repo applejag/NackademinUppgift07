@@ -47,8 +47,9 @@ namespace NackademinUppgift07.Controllers
 	    public async Task<IActionResult> ViewCart()
 	    {
 			ViewBag.Kund = await SessionGetKund();
+		    ViewBag.Cart = await SessionLoadCart();
 
-		    return View(await SessionLoadCart());
+			return View(ViewBag.Cart);
 		}
 	    #endregion
 
