@@ -43,7 +43,7 @@ namespace NackademinUppgift07
 
 	        app.UseMvc(router =>
 	        {
-		        router.MapRoute("default", "{controller=Home}/{action=Index}");
+		        router.MapRoute("default", "{controller=Tomasos}/{action=Index}");
 	        });
         }
     }

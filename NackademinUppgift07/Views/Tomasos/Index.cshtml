@@ -1,8 +1,31 @@
-﻿
+﻿@model List<Matratt>
+
 @{
     ViewData["Title"] = "Tomasos";
 	Layout = "~/Views/_LayoutMain.cshtml";
 }
 
-<h2>Index</h2>
-
+<article>
+	@foreach (Matratt mat in Model)
+	{
+		<section>
+			<div><h2>@mat.MatrattNamn</h2></div>
+			<div>@mat.Pris.ToString("C")</div>
+			<div>
+				<a asp-action="AddToCart" asp-route-id="@mat.MatrattId">Lägg till i kundvagn</a>
+			</div>
+			<div>
+				<div>@mat.Beskrivning</div>
+				<div>
+					<strong>Ingredienser:</strong>
+					<ul>
+						@foreach (MatrattProdukt nav in mat.MatrattProdukt)
+						{
+							<li>@nav.Produkt.ProduktNamn</li>
+						}
+					</ul>
+				</div>
+			</div>
+		</section>
+	}
+</article>
