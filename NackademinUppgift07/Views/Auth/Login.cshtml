@@ -1,0 +1,27 @@
+﻿@model ViewLogin
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/_LayoutMain.cshtml";
+}
+
+<form asp-action="Login" method="post">
+	<fieldset>
+		<legend>Skriv din inloggning</legend>
+
+		<p>
+			<span asp-validation-for="AnvandarNamn"></span>
+			<label asp-for="AnvandarNamn"></label>
+			<input asp-for="AnvandarNamn" />
+		</p>
+
+		<p>
+			<span asp-validation-for="Losenord"></span>
+			<label asp-for="Losenord"></label>
+			<input asp-for="Losenord"/>
+		</p>
+
+		<p>
+			<input type="submit" value="Logga in"/>
+		</p>
+	</fieldset>
+</form>
