@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NackademinUppgift07.Models;
 using NackademinUppgift07.ViewModels;
 
@@ -13,7 +9,7 @@ namespace NackademinUppgift07.Controllers
 {
     public class AuthController : Controller
     {
-	    private readonly TomasosContext context;
+	    protected readonly TomasosContext context;
 
 	    public AuthController(TomasosContext context)
 	    {
@@ -142,16 +138,26 @@ namespace NackademinUppgift07.Controllers
 
 	    internal int? AuthGetCurrentID()
 	    {
-		    return HttpContext.Session.GetInt32("Auth");
+		    return AuthGetCurrentID(HttpContext);
 	    }
+
+	    internal static int? AuthGetCurrentID(HttpContext httpContext)
+	    {
+		    return httpContext.Session.GetInt32("Auth");
+		}
 
 	    internal async Task<Kund> AuthGetCurrentUser()
 	    {
-			int? id = AuthGetCurrentID();
+		    return await AuthGetCurrentUser(HttpContext, context);
+	    }
+
+	    internal static async Task<Kund> AuthGetCurrentUser(HttpContext httpContext, TomasosContext dbContext)
+	    {
+			int? id = AuthGetCurrentID(httpContext);
 		    if (!id.HasValue) return null;
 
-		    return await context.Kund
-				.SingleOrDefaultAsync(k => k.KundId == id.Value);
-	    }
+		    return await dbContext.Kund
+			    .SingleOrDefaultAsync(k => k.KundId == id.Value);
+		}
 	}
 }

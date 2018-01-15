@@ -1,0 +1,50 @@
+﻿@model List<Matratt>
+
+@{
+	ViewData["Title"] = "Kundvagn";
+	Layout = "~/Views/_LayoutMain.cshtml";
+	Kund kund = ViewBag.Kund;
+}
+
+<table>
+	<thead>
+	<tr>
+		<th>Maträtt</th>
+		<th>Antal</th>
+		<th>Enhetspris</th>
+		<th>Pris</th>
+	</tr>
+	</thead>
+	<tbody>
+	@if (Model.Count == 0)
+	{
+		<tr>
+			<td colspan="4"><i>Din kundvagn är tom</i></td>
+		</tr>
+	}
+	else
+	{
+		foreach (var group in (from mat in Model
+			group mat by mat.MatrattId
+			into g
+			select new {Maträtt = g.First(), Count = g.Count()})
+			.OrderBy(g => g.Maträtt.MatrattNamn))
+		{
+			<tr>
+				<td>@group.Maträtt.MatrattNamn <i>(@group.Maträtt.MatrattTypNavigation.Beskrivning)</i></td>
+				<td>@group.Count.ToString("F2")</td>
+				<td>@group.Maträtt.Pris.ToString("C")</td>
+				<td>@((group.Maträtt.Pris * group.Count).ToString("C"))</td>
+			</tr>
+		}
+	}
+	</tbody>
+	<tfoot>
+	<tr>
+		<th>Summa</th>
+		<th>@Model.Count.ToString("F2")</th>
+		<th></th>
+		<th>@Model.Sum(m => m.Pris).ToString("C")</th>
+	</tr>
+	</tfoot>
+</table>
