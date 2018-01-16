@@ -27,7 +27,6 @@ namespace NackademinUppgift07.ViewModels
 
 		public Kund CurrentKund { get; }
 
-
 		[Required(ErrorMessage = "Var god ange ditt namn.")]
 		[MaxLength(100, ErrorMessage = "Namnet får max vara 100 karaktärer.")]
 		public string Namn { get; set; }

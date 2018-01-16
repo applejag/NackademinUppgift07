@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using NackademinUppgift07.Models;
 using Newtonsoft.Json;
 
@@ -13,8 +14,8 @@ namespace NackademinUppgift07.Controllers
     public class TomasosController : AuthController
     {
 
-	    private List<Matratt> _currentCart;
-		public List<Matratt> CurrentCart
+	    private SavedCart _currentCart;
+		public SavedCart CurrentCart
 		{
 			get => _currentCart;
 			set => _currentCart =
@@ -28,7 +29,7 @@ namespace NackademinUppgift07.Controllers
 	    protected override async Task Initialize()
 	    {
 		    await base.Initialize();
-		    CurrentCart = await SessionLoadCart();
+		    CurrentCart = SessionLoadCart();
 	    }
 
 	    #region Actions
@@ -52,7 +53,7 @@ namespace NackademinUppgift07.Controllers
 				.SingleOrDefaultAsync(m => m.MatrattId == id);
 
 			if (maträtt != null)
-				SessionAddToCart(maträtt);
+				await SessionAddToCart(maträtt);
 
 		    return RedirectToAction("Index");
 	    }
@@ -61,56 +62,140 @@ namespace NackademinUppgift07.Controllers
 	    {
 			await Initialize();
 
-			return View(ViewBag.Cart);
+			return View(await CurrentCart.ConvertToOrder(context));
 		}
+
+	    public async Task<IActionResult> ViewOrder(int id)
+	    {
+		    await Initialize();
+
+		    if (!IsLoggedIn)
+			    return RedirectToAction("Login");
+
+		    Bestallning cartInQuestion = await context.Bestallning
+			    .Include(b => b.Kund)
+			    .Include(b => b.BestallningMatratt).ThenInclude(bm => bm.Matratt).ThenInclude(m => m.MatrattTypNavigation)
+			    .Include(b => b.BestallningMatratt).ThenInclude(bm => bm.Matratt).ThenInclude(m => m.MatrattProdukt)
+			    .ThenInclude(mp => mp.Produkt)
+			    .SingleOrDefaultAsync(b => b != null && b.BestallningId == id && b.KundId == CurrentKund.KundId);
+
+			if (cartInQuestion == null)
+			    return RedirectToAction("ViewCart");
+
+		    return View("ViewCart", cartInQuestion);
+	    }
+
+	    public async Task<IActionResult> OrderCart()
+	    {
+		    await Initialize();
+
+		    if (!IsLoggedIn)
+			    return RedirectToAction("ViewCart");
+
+		    if (CurrentCart.TotalCount == 0)
+			    return RedirectToAction("ViewCart");
+
+		    Bestallning cart = await CurrentCart.ConvertToOrder(context);
+		    context.Attach(CurrentKund);
+		    cart.Kund = CurrentKund;
+		    cart.KundId = CurrentKund.KundId;
+
+			foreach (BestallningMatratt bestallningMatratt in cart.BestallningMatratt)
+			{
+				context.Attach(bestallningMatratt.Matratt);
+			}
+
+		    cart.Levererad = false;
+		    cart.Totalbelopp = cart.BestallningMatratt
+			    .Sum(bm => bm.Antal * bm.Matratt.Pris);
+		    cart.BestallningDatum = DateTime.Now;
+
+		    context.Bestallning.Add(cart);
+		    await context.SaveChangesAsync();
+
+			// Reset cart
+			SessionSaveCart(new SavedCart());
+
+		    return RedirectToAction("ViewOrder", new
+		    {
+			    id = cart.BestallningId,
+		    });
+	    }
 		#endregion
 
-		protected void SessionAddToCart(Matratt maträtt)
+		protected async Task SessionAddToCart(Matratt maträtt)
 		{
-			CurrentCart.Add(maträtt);
-			SessionSaveCart(CurrentCart);
+			Bestallning cart = await CurrentCart.ConvertToOrder(context);
+			BestallningMatratt group = cart.BestallningMatratt
+				.SingleOrDefault(g => g.MatrattId == maträtt.MatrattId);
+
+			if (group == null)
+				// New group
+				cart.BestallningMatratt.Add(new BestallningMatratt
+				{
+					Matratt = maträtt,
+					MatrattId = maträtt.MatrattId,
+					Antal = 1,
+				});
+			else
+				// Increment existing
+				group.Antal++;
+
+			SessionSaveCart(new SavedCart(cart));
 		}
 
-		protected void SessionSaveCart(IEnumerable<Matratt> cart)
+		protected void SessionSaveCart(SavedCart cart)
 		{
-			var savedCart = new SavedCart(cart);
-			string serialized = JsonConvert.SerializeObject(savedCart);
+			string serialized = JsonConvert.SerializeObject(cart);
 
 			HttpContext.Session.SetString("Cart", serialized);
 		}
 
-		protected async Task<List<Matratt>> SessionLoadCart()
+		protected SavedCart SessionLoadCart()
 		{
 			string serialized = HttpContext.Session.GetString("Cart");
 
 			if (serialized == null)
-				return new List<Matratt>();
+				return new SavedCart();
 
 			var savedCart = JsonConvert.DeserializeObject<SavedCart>(serialized);
 
-			return await savedCart.ConvertToCart(context);
+			return savedCart;
 		}
 
-	    public struct SavedCart
+		public struct SavedCart
 	    {
-		    public int[] IDs;
+		    public (int foodId, int count)[] orders;
+		    public int TotalCount => orders?.Sum(o => o.count) ?? 0;
 
-		    public SavedCart(IEnumerable<Matratt> cart)
+		    public SavedCart(Bestallning cart)
 		    {
-				IDs = cart.Select(m => m.MatrattId).ToArray();
+				orders = (from b in cart.BestallningMatratt
+						  select (foodId: b.Matratt.MatrattId, count: b.Antal))
+						  .ToArray();
 		    }
 
-		    public async Task<List<Matratt>> ConvertToCart(TomasosContext context)
+		    public async Task<Bestallning> ConvertToOrder(TomasosContext context)
 		    {
-			    if (IDs == null)
-				    return new List<Matratt>();
+			    if (orders == null)
+				    return new Bestallning();
 
-			    return await (from mat in context.Matratt
-					           join id in IDs on mat.MatrattId equals id
-					           select mat)
-				           .Include(m => m.MatrattTypNavigation)
-				           .Include(m => m.MatrattProdukt).ThenInclude(p => p.Produkt)
-				           .ToListAsync() ?? new List<Matratt>();
+			    var matratts = context.Matratt
+					.Include(m => m.MatrattTypNavigation)
+				    .Include(m => m.MatrattProdukt).ThenInclude(p => p.Produkt);
+
+			    return new Bestallning
+			    {
+				    BestallningMatratt =
+					    await (from mat in matratts
+						    join order in orders on mat.MatrattId equals order.foodId
+						    select new BestallningMatratt
+						    {
+							    Matratt = mat,
+							    MatrattId = mat.MatrattId,
+							    Antal = order.count
+						    }).ToListAsync(),
+			    };
 		    }
 		}
 	}

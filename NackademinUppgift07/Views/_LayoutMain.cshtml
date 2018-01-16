@@ -1,6 +1,7 @@
-﻿@{
+﻿@using NackademinUppgift07.Controllers
+@{
 	Kund kund = ViewBag.Kund;
-	List<Matratt> cart = ViewBag.Cart;
+	TomasosController.SavedCart cart = ViewBag.Cart;
 }
 
 <!DOCTYPE html>
@@ -24,7 +25,7 @@
 <nav>
 	<ul>
 		<li><a asp-action="Index">Maträtter</a></li>
-		<li><a asp-action="ViewCart">Kundvagn (@cart.Count rätt@(cart.Count == 1 ? "" : "er"))</a></li>
+		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
 	</ul>
 	<ul>
 	@if (kund == null)

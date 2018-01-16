@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace NackademinUppgift07.Models
 {
@@ -18,5 +20,8 @@ namespace NackademinUppgift07.Models
 
         public Kund Kund { get; set; }
         public ICollection<BestallningMatratt> BestallningMatratt { get; set; }
+
+		[NotMapped]
+	    public int TotalCount => BestallningMatratt?.Sum(bm => bm.Antal) ?? 0;
     }
 }

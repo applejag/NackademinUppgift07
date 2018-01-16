@@ -3,7 +3,7 @@ fieldset legend {
 	font-weight: bold;
 }
 
-form p > span {
+form p > span, .form-error {
 	color: red;
 	display: block;
 	padding: 0 10%;
@@ -14,7 +14,7 @@ form label {
 	display: block;
 }
 
-form input {
+form input, button, .button {
 	width: 80%;
 	margin: 0 auto;
 	display: block;
@@ -29,14 +29,25 @@ form input:focus {
 	outline: none;
 }
 
-form input[type="submit"] {
+form input[type="submit"], button, .button {
 	padding: 0.5em;
 	background-color: beige;
 	color: #666;
+	text-align: center;
 }
 
-form input[type="submit"]:hover {
+form input[type="submit"]:hover, button:hover, .button:hover {
 	color: #222;
 	background-color: beige;
-	border-color: #666;
+	
+	border: 1px solid #666;
+	border-bottom: 3px solid #666;
+}
+
+form input:disabled, button:disabled, .button:disabled, .button.disabled {
+	background-color: lightgray;
+	border: 1px solid gray;
+	border-bottom: 3px solid gray;
+	color: gray;
+	cursor: not-allowed;
 }

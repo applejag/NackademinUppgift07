@@ -7,12 +7,14 @@ th {
 	text-align: left;
 }
 
-thead th {
+thead tr:last-child th {
 	border-bottom: 1px solid lightgray;
+	padding-bottom: 0.5em;
 }
 
-tfoot th {
-	border-top: 1px solid lightgray;
+tfoot tr:first-child th {
+	border-top: 3px dashed lightgray;
+	padding-top: 0.5em;
 }
 
 .cart-number {
