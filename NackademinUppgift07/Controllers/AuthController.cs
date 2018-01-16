@@ -7,17 +7,17 @@ using NackademinUppgift07.ViewModels;
 
 namespace NackademinUppgift07.Controllers
 {
-    public class AuthController : Controller
+    public abstract class AuthController : Controller
     {
 	    protected readonly TomasosContext context;
 
-	    public AuthController(TomasosContext context)
+	    protected AuthController(TomasosContext context)
 	    {
 		    this.context = context;
 	    }
 
 	    #region Actions
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Account()
 		{
 			Kund kund = await AuthGetCurrentUser();
 			ViewBag.Kund = kund;
@@ -30,7 +30,7 @@ namespace NackademinUppgift07.Controllers
 
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
-	    public async Task<IActionResult> Index(ViewKund changed)
+	    public async Task<IActionResult> Account(ViewKund changed)
 		{
 			Kund kund = await AuthGetCurrentUser();
 			ViewBag.Kund = kund;
@@ -69,7 +69,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    Kund kund = await AuthGetCurrentUser();
 		    if (kund != null)
-			    return RedirectToAction("Index");
+			    return RedirectToAction("Account");
 
 			return View();
 	    }
@@ -102,14 +102,14 @@ namespace NackademinUppgift07.Controllers
 
 			// Login success
 			AuthLogin(kund.KundId);
-			return RedirectToAction("Index");
+			return RedirectToAction("Account");
 		}
 
 		[HttpGet]
 	    public async Task<IActionResult> Register()
 		{
 			if (await AuthGetCurrentUser() != null)
-				return RedirectToAction("Index");
+				return RedirectToAction("Account");
 
 			return View();
 		}
@@ -119,7 +119,7 @@ namespace NackademinUppgift07.Controllers
 	    public async Task<IActionResult> Register(Kund kund)
 	    {
 		    if (await AuthGetCurrentUser() != null)
-			    return RedirectToAction("Index");
+			    return RedirectToAction("Account");
 
 			if (!ModelState.IsValid)
 				return View(kund);
@@ -129,7 +129,7 @@ namespace NackademinUppgift07.Controllers
 
 			AuthLogin(kund.KundId);
 
-		    return RedirectToAction("Index");
+		    return RedirectToAction("Account");
 	    }
 
 	    public IActionResult Logout()
@@ -140,32 +140,32 @@ namespace NackademinUppgift07.Controllers
 	    }
 		#endregion
 
-	    internal void AuthLogin(int id)
+	    protected void AuthLogin(int id)
 	    {
 			HttpContext.Session.SetInt32("Auth", id);
 		}
 
-	    internal void AuthLogout()
+	    protected void AuthLogout()
 	    {
 		    HttpContext.Session.Remove("Auth");
 	    }
 
-	    internal int? AuthGetCurrentID()
+	    protected int? AuthGetCurrentID()
 	    {
 		    return AuthGetCurrentID(HttpContext);
 	    }
 
-	    internal static int? AuthGetCurrentID(HttpContext httpContext)
+	    protected static int? AuthGetCurrentID(HttpContext httpContext)
 	    {
 		    return httpContext.Session.GetInt32("Auth");
 		}
 
-	    internal async Task<Kund> AuthGetCurrentUser()
+	    protected async Task<Kund> AuthGetCurrentUser()
 	    {
 		    return await AuthGetCurrentUser(HttpContext, context);
 	    }
 
-	    internal static async Task<Kund> AuthGetCurrentUser(HttpContext httpContext, TomasosContext dbContext)
+	    protected static async Task<Kund> AuthGetCurrentUser(HttpContext httpContext, TomasosContext dbContext)
 	    {
 			int? id = AuthGetCurrentID(httpContext);
 		    if (!id.HasValue) return null;

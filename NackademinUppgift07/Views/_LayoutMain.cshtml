@@ -24,20 +24,20 @@
 <nav>
 	<ul>
 		<li><a asp-controller="Tomasos" asp-action="Index">Maträtter</a></li>
-		@if (kund != null)
+		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cart.Count rätt@(cart.Count == 1 ? "" : "er"))</a></li>
+
+		@if (kund == null)
 		{
-			<li><a asp-controller="Auth" asp-action="Index">Profil</a></li>
-			<li><a asp-controller="Auth" asp-action="Logout">Logga ut</a></li>
-		}
-		else
-		{
-			<li><a asp-controller="Auth" asp-action="Login">Logga in</a></li>
-		}
-		@if (cart?.Count > 0)
-		{
-			<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cart.Count rätt@(cart.Count == 1 ? "" : "er"))</a></li>
+			<li><a asp-controller="Tomasos" asp-action="Login">Logga in</a></li>
 		}
 	</ul>
+	@if (kund != null)
+	{
+		<ul>
+			<li><a asp-controller="Tomasos" asp-action="Account">Min profil</a></li>
+			<li><a asp-controller="Tomasos" asp-action="Logout">Logga ut</a></li>
+		</ul>
+	}
 </nav>
 <article>
 	@RenderBody()

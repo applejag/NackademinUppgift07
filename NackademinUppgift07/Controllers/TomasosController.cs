@@ -10,14 +10,11 @@ using Newtonsoft.Json;
 
 namespace NackademinUppgift07.Controllers
 {
-    public class TomasosController : Controller
+    public class TomasosController : AuthController
     {
-	    protected readonly TomasosContext context;
-
 	    public TomasosController(TomasosContext context)
-	    {
-		    this.context = context;
-	    }
+			: base(context)
+	    { }
 
 	    #region Actions
 		public async Task<IActionResult> Index()
