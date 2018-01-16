@@ -23,21 +23,21 @@
 </header>
 <nav>
 	<ul>
-		<li><a asp-controller="Tomasos" asp-action="Index">Maträtter</a></li>
-		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cart.Count rätt@(cart.Count == 1 ? "" : "er"))</a></li>
-
-		@if (kund == null)
-		{
-			<li><a asp-controller="Tomasos" asp-action="Login">Logga in</a></li>
-		}
+		<li><a asp-action="Index">Maträtter</a></li>
+		<li><a asp-action="ViewCart">Kundvagn (@cart.Count rätt@(cart.Count == 1 ? "" : "er"))</a></li>
 	</ul>
-	@if (kund != null)
+	<ul>
+	@if (kund == null)
 	{
-		<ul>
-			<li><a asp-controller="Tomasos" asp-action="Account">Min profil</a></li>
-			<li><a asp-controller="Tomasos" asp-action="Logout">Logga ut</a></li>
-		</ul>
+		<li><a asp-action="Login">Logga in</a></li>
+		<li><a asp-action="Register">Registrera ny kund</a></li>
 	}
+	else
+	{
+		<li><a asp-action="Account">Min profil</a></li>
+		<li><a asp-action="Logout">Logga ut</a></li>
+	}
+	</ul>
 </nav>
 <article>
 	@RenderBody()

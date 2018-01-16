@@ -11,37 +11,51 @@ namespace NackademinUppgift07.Controllers
     {
 	    protected readonly TomasosContext context;
 
+	    private Kund _currentKund;
+	    public Kund CurrentKund
+	    {
+		    get => _currentKund;
+		    set => _currentKund = 
+			    ViewBag.Kund = value;
+	    }
+
+		public bool IsLoggedIn => CurrentKund != null;
+
+
 	    protected AuthController(TomasosContext context)
 	    {
 		    this.context = context;
 	    }
 
-	    #region Actions
+	    protected virtual async Task Initialize()
+	    {
+		    CurrentKund = await AuthGetCurrentUser();
+	    }
+
+		#region Actions
 		public async Task<IActionResult> Account()
 		{
-			Kund kund = await AuthGetCurrentUser();
-			ViewBag.Kund = kund;
+			await Initialize();
 
-			if (kund == null)
-	            return RedirectToAction("Login");
+			if (!IsLoggedIn)
+				return RedirectToAction("Login");
 
-			return View(new ViewKund(kund));
+			return View(new ViewKund(CurrentKund));
 		}
 
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
 	    public async Task<IActionResult> Account(ViewKund changed)
 		{
-			Kund kund = await AuthGetCurrentUser();
-			ViewBag.Kund = kund;
+			await Initialize();
 
-			if (kund == null)
+			if (!IsLoggedIn)
 				return RedirectToAction("Login");
 
 			if (!ModelState.IsValid)
 				return View(changed);
 
-			if (kund.Losenord != changed.OldLosenord)
+			if (CurrentKund.Losenord != changed.OldLosenord)
 			{
 				ModelState.AddModelError(nameof(changed.OldLosenord), "Felaktigt lösenord.");
 				return View(changed);
@@ -49,35 +63,41 @@ namespace NackademinUppgift07.Controllers
 
 			if (!string.IsNullOrEmpty(changed.NewLosenord))
 			{
-				kund.Losenord = changed.NewLosenord;
+				CurrentKund.Losenord = changed.NewLosenord;
 			}
 
-			kund.Namn = changed.Namn;
-			kund.Email = changed.Email;
-			kund.Postnr = changed.Postnr;
-			kund.Postort = changed.Postort;
-			kund.Gatuadress = changed.Gatuadress;
-			kund.Telefon = changed.Telefon;
+			CurrentKund.Namn = changed.Namn;
+			CurrentKund.Email = changed.Email;
+			CurrentKund.Postnr = changed.Postnr;
+			CurrentKund.Postort = changed.Postort;
+			CurrentKund.Gatuadress = changed.Gatuadress;
+			CurrentKund.Telefon = changed.Telefon;
 
 			await context.SaveChangesAsync();
 			
-			return View(new ViewKund(kund));
+			return View(new ViewKund(CurrentKund));
 		}
 
 		[HttpGet]
-	    public async Task<IActionResult> Login()
-	    {
-		    Kund kund = await AuthGetCurrentUser();
-		    if (kund != null)
-			    return RedirectToAction("Account");
+		public async Task<IActionResult> Login()
+		{
+			await Initialize();
+
+			if (IsLoggedIn)
+				return RedirectToAction("Account");
 
 			return View();
-	    }
+		}
 
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
 	    public async Task<IActionResult> Login(ViewLogin login)
 		{
+			await Initialize();
+
+			if (IsLoggedIn)
+				return RedirectToAction("Account");
+
 			if (!ModelState.IsValid)
 				return View(login);
 
@@ -106,19 +126,23 @@ namespace NackademinUppgift07.Controllers
 		}
 
 		[HttpGet]
-	    public async Task<IActionResult> Register()
+		public async Task<IActionResult> Register()
 		{
-			if (await AuthGetCurrentUser() != null)
+			await Initialize();
+
+			if (IsLoggedIn)
 				return RedirectToAction("Account");
 
 			return View();
 		}
 
-	    [HttpPost]
+		[HttpPost]
 	    [AutoValidateAntiforgeryToken]
 	    public async Task<IActionResult> Register(Kund kund)
-	    {
-		    if (await AuthGetCurrentUser() != null)
+		{
+			await Initialize();
+
+		    if (IsLoggedIn)
 			    return RedirectToAction("Account");
 
 			if (!ModelState.IsValid)
@@ -152,25 +176,15 @@ namespace NackademinUppgift07.Controllers
 
 	    protected int? AuthGetCurrentID()
 	    {
-		    return AuthGetCurrentID(HttpContext);
+		    return HttpContext.Session.GetInt32("Auth");
 	    }
-
-	    protected static int? AuthGetCurrentID(HttpContext httpContext)
-	    {
-		    return httpContext.Session.GetInt32("Auth");
-		}
 
 	    protected async Task<Kund> AuthGetCurrentUser()
 	    {
-		    return await AuthGetCurrentUser(HttpContext, context);
-	    }
-
-	    protected static async Task<Kund> AuthGetCurrentUser(HttpContext httpContext, TomasosContext dbContext)
-	    {
-			int? id = AuthGetCurrentID(httpContext);
+		    int? id = AuthGetCurrentID();
 		    if (!id.HasValue) return null;
 
-		    return await dbContext.Kund
+		    return await context.Kund
 			    .SingleOrDefaultAsync(k => k.KundId == id.Value);
 		}
 	}
