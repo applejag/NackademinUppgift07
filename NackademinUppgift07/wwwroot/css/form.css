@@ -3,7 +3,7 @@ fieldset legend {
 	font-weight: bold;
 }
 
-form span {
+form p > span {
 	color: red;
 	display: block;
 	padding: 0 10%;

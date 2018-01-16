@@ -23,13 +23,16 @@ namespace NackademinUppgift07.Models
 	    [MaxLength(100, ErrorMessage = "Namnet får max vara 100 karaktärer.")]
 	    public string Namn { get; set; }
 
-	    [MaxLength(50, ErrorMessage = "Gatu adressen får max vara 50 karaktärer.")]
+	    [Required(ErrorMessage = "Var god ange din gatuadress.")]
+	    [MaxLength(50, ErrorMessage = "Gatuadressen får max vara 50 karaktärer.")]
 	    public string Gatuadress { get; set; }
 
-	    [MaxLength(20, ErrorMessage = "Post nummret får max vara 20 karaktärer.")]
+	    [Required(ErrorMessage = "Var god ange ditt postnummer.")]
+		[MaxLength(20, ErrorMessage = "Postnummret får max vara 20 karaktärer.")]
 	    [DataType(DataType.PostalCode)]
 	    public string Postnr { get; set; }
 
+	    [Required(ErrorMessage = "Var god ange din post ort.")]
 	    [MaxLength(100, ErrorMessage = "Post orten får max vara 100 karaktärer.")]
 	    public string Postort { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -102,7 +103,7 @@ namespace NackademinUppgift07.Controllers
 				return View(login);
 
 			Kund kund = await context.Kund.SingleOrDefaultAsync(k =>
-				k.AnvandarNamn == login.AnvandarNamn);
+				string.Equals(k.AnvandarNamn, login.AnvandarNamn, StringComparison.CurrentCultureIgnoreCase));
 
 			if (kund == null)
 			{
@@ -147,6 +148,16 @@ namespace NackademinUppgift07.Controllers
 
 			if (!ModelState.IsValid)
 				return View(kund);
+
+			string trimmedName = kund.AnvandarNamn.Trim();
+			if (await context.Kund
+				.AnyAsync(k => string.Equals(k.AnvandarNamn.Trim(), trimmedName, StringComparison.CurrentCultureIgnoreCase)))
+			{
+				ModelState.AddModelError(nameof(kund.AnvandarNamn), "Användarnamnet är upptaget.");
+				return View(kund);
+			}
+
+			kund.AnvandarNamn = trimmedName;
 
 		    context.Kund.Add(kund);
 		    await context.SaveChangesAsync();
