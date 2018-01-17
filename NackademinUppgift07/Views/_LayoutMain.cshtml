@@ -1,6 +1,5 @@
 ﻿@using NackademinUppgift07.Controllers
 @{
-	Kund kund = ViewBag.Kund;
 	TomasosController.SavedCart cart = ViewBag.Cart;
 	List<MatrattTyp> matrattTypes = ViewBag.MaträttTypes;
 }
@@ -32,18 +31,18 @@
 		}
 	</ul>
 	<ul>
-	@if (kund == null)
-	{
-		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
-		<li><a asp-action="Login">Logga in</a></li>
-		<li><a asp-action="Register">Registrera ny kund</a></li>
-	}
-	else
+	@if (User.Identity.IsAuthenticated)
 	{
 		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
 		<li><a asp-action="Account">Min profil</a></li>
 		<li><a asp-action="ListOrders">Mina beställningar</a></li>
 		<li><a asp-action="Logout">Logga ut</a></li>
+	}
+	else
+	{
+		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
+		<li><a asp-action="Login">Logga in</a></li>
+		<li><a asp-action="Register">Registrera ny kund</a></li>
 	}
 	</ul>
 </nav>

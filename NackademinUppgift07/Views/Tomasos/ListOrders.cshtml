@@ -1,11 +1,10 @@
-﻿
+﻿@model ApplicationUser
 @{
     ViewData["Title"] = "Tidigare beställningar";
     Layout = "~/Views/_LayoutMain.cshtml";
-	Kund kund = ViewBag.Kund;
 }
 
-@if (kund.Bestallning.Count == 0)
+@if (Model.Bestallning.Count == 0)
 {
 	<section>
 		<p>
@@ -15,7 +14,7 @@
 }
 else
 {
-	foreach (Bestallning b in kund.Bestallning.OrderByDescending(b => b.BestallningDatum))
+	foreach (Bestallning b in Model.Bestallning.OrderByDescending(b => b.BestallningDatum))
 	{
 		await Html.RenderPartialAsync("_OrderPartial", b);
 	}

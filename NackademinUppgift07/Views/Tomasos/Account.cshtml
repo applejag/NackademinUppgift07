@@ -1,4 +1,4 @@
-﻿@model Kund
+﻿@model UserRegisterModel
 
 @{
     ViewData["Title"] = "Konto";
@@ -10,14 +10,14 @@
 		<legend>Ändra profildetaljer</legend>
 		<div asp-validation-summary="All"></div>
 		<p>
-			<label asp-for="AnvandarNamn"></label>
-			<input type="text" data-val="false" disabled="disabled" value="@Model.AnvandarNamn" />
+			<label asp-for="UserName"></label>
+			<input type="text" data-val="false" disabled="disabled" value="@Model.UserName" />
 		</p>
 		<hr/>
 		<p>
-			<span asp-validation-for="Namn"></span>
-			<label asp-for="Namn"></label>
-			<input asp-for="Namn" />
+			<span asp-validation-for="DisplayName"></span>
+			<label asp-for="DisplayName"></label>
+			<input asp-for="DisplayName" />
 		</p>
 		<p>
 			<span asp-validation-for="Email"></span>
@@ -26,24 +26,24 @@
 		</p>
 		<hr />
 		<p>
-			<span asp-validation-for="Telefon"></span>
-			<label asp-for="Telefon"></label>
-			<input asp-for="Telefon" />
+			<span asp-validation-for="PhoneNumber"></span>
+			<label asp-for="PhoneNumber"></label>
+			<input asp-for="PhoneNumber" />
 		</p>
 		<p>
-			<span asp-validation-for="Gatuadress"></span>
-			<label asp-for="Gatuadress"></label>
-			<input asp-for="Gatuadress" />
+			<span asp-validation-for="Address"></span>
+			<label asp-for="Address"></label>
+			<input asp-for="Address" />
 		</p>
 		<p>
-			<span asp-validation-for="Postnr"></span>
-			<label asp-for="Postnr"></label>
-			<input asp-for="Postnr" />
+			<span asp-validation-for="PostalCode"></span>
+			<label asp-for="PostalCode"></label>
+			<input asp-for="PostalCode" />
 		</p>
 		<p>
-			<span asp-validation-for="Postort"></span>
-			<label asp-for="Postort"></label>
-			<input asp-for="Postort" />
+			<span asp-validation-for="City"></span>
+			<label asp-for="City"></label>
+			<input asp-for="City" />
 		</p>
 		<hr />
 		<p>

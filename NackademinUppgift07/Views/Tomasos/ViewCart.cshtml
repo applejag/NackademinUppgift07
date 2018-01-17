@@ -3,7 +3,6 @@
 @{
 	ViewData["Title"] = "Kundvagn";
 	Layout = "~/Views/_LayoutMain.cshtml";
-	Kund kund = ViewBag.Kund;
 }
 
 @{ await Html.RenderPartialAsync("_OrderPartial", Model); }
@@ -24,7 +23,7 @@
 			</p>
 		}
 
-		@if (kund == null)
+		@if (!User.Identity.IsAuthenticated)
 		{
 			<p>
 				<span class="form-error">Du måste vara inloggad för att kunna beställa din kundvagn.</span>

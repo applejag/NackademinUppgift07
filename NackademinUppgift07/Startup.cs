@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +32,11 @@ namespace NackademinUppgift07
 		        options.UseSqlServer(Configuration.GetConnectionString("Tomasos")));
 
 	        services.AddSession();
-
 	        services.AddDistributedMemoryCache();
+
+	        services.AddIdentity<ApplicationUser, IdentityRole>()
+				.AddEntityFrameworkStores<TomasosContext>()
+		        .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,12 +48,11 @@ namespace NackademinUppgift07
             }
 
 	        app.UseSession();
-
+	        app.UseAuthentication();
 	        app.UseStaticFiles();
 
 	        app.UseMvc(router =>
 			{
-
 				router.MapRoute("default", "{action}", new
 		        {
 			        controller = "Tomasos",

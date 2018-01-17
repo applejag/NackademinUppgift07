@@ -1,4 +1,4 @@
-﻿@model Kund
+﻿@model UserRegisterModel
 
 @{
     ViewData["Title"] = "Ny användare";
@@ -10,14 +10,14 @@
 		<legend>Registrera ny användare</legend>
 
 		<p>
-			<span asp-validation-for="AnvandarNamn"></span>
-			<label asp-for="AnvandarNamn"></label>
-			<input asp-for="AnvandarNamn" />
+			<span asp-validation-for="UserName"></span>
+			<label asp-for="UserName"></label>
+			<input asp-for="UserName" />
 		</p>
 		<p>
-			<span asp-validation-for="Namn"></span>
-			<label asp-for="Namn"></label>
-			<input asp-for="Namn" />
+			<span asp-validation-for="DisplayName"></span>
+			<label asp-for="DisplayName"></label>
+			<input asp-for="DisplayName" />
 		</p>
 		<p>
 			<span asp-validation-for="Email"></span>
@@ -26,36 +26,36 @@
 		</p>
 		<hr/>
 		<p>
-			<span asp-validation-for="Telefon"></span>
-			<label asp-for="Telefon"></label>
-			<input asp-for="Telefon" />
+			<span asp-validation-for="PhoneNumber"></span>
+			<label asp-for="PhoneNumber"></label>
+			<input asp-for="PhoneNumber" />
 		</p>
 		<p>
-			<span asp-validation-for="Gatuadress"></span>
-			<label asp-for="Gatuadress"></label>
-			<input asp-for="Gatuadress" />
+			<span asp-validation-for="Address"></span>
+			<label asp-for="Address"></label>
+			<input asp-for="Address" />
 		</p>
 
 		<p>
-			<span asp-validation-for="Postnr"></span>
-			<label asp-for="Postnr"></label>
-			<input asp-for="Postnr" />
+			<span asp-validation-for="PostalCode"></span>
+			<label asp-for="PostalCode"></label>
+			<input asp-for="PostalCode" />
 		</p>
 		<p>
-			<span asp-validation-for="Postort"></span>
-			<label asp-for="Postort"></label>
-			<input asp-for="Postort" />
+			<span asp-validation-for="City"></span>
+			<label asp-for="City"></label>
+			<input asp-for="City" />
 		</p>
 		<hr/>
 		<p>
-			<span asp-validation-for="Losenord"></span>
-			<label asp-for="Losenord"></label>
-			<input asp-for="Losenord" />
+			<span asp-validation-for="Password"></span>
+			<label asp-for="Password"></label>
+			<input asp-for="Password" />
 		</p>
 		<p>
-			<span asp-validation-for="LosenordConfirm"></span>
-			<label asp-for="LosenordConfirm"></label>
-			<input asp-for="LosenordConfirm" />
+			<span asp-validation-for="PasswordConfirm"></span>
+			<label asp-for="PasswordConfirm"></label>
+			<input asp-for="PasswordConfirm" />
 		</p>
 		<hr/>
 		<p>

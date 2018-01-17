@@ -1,78 +1,68 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NackademinUppgift07.Models;
 using NackademinUppgift07.ViewModels;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NackademinUppgift07.Controllers
 {
-    public abstract class AuthController : Controller
+    public partial class TomasosController
     {
 	    protected readonly TomasosContext context;
+	    protected readonly UserManager<ApplicationUser> userManager;
+	    protected readonly SignInManager<ApplicationUser> signInManager;
 
-	    private Kund _currentKund;
-	    public Kund CurrentKund
-	    {
-		    get => _currentKund;
-		    set => _currentKund = 
-			    ViewBag.Kund = value;
-	    }
-
-		public bool IsLoggedIn => CurrentKund != null;
-
-	    protected AuthController(TomasosContext context)
+	    protected TomasosController(
+			TomasosContext context,
+			UserManager<ApplicationUser> userManager,
+			SignInManager<ApplicationUser> signInManager)
 	    {
 		    this.context = context;
+		    this.userManager = userManager;
+		    this.signInManager = signInManager;
 	    }
 
-	    protected virtual async Task Initialize()
-	    {
-		    CurrentKund = await AuthGetCurrentUser();
-	    }
+	    public bool IsSignedIn => signInManager.IsSignedIn(User);
 
 		#region Actions
+		[Authorize]
 		public async Task<IActionResult> Account()
 		{
 			await Initialize();
 
-			if (!IsLoggedIn)
-				return RedirectToAction("Login");
+			ApplicationUser currentUser = await userManager.GetUserAsync(User);
 
-			return View(CurrentKund);
+			return View(new UserRegisterModel(currentUser));
 		}
 
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
-	    public async Task<IActionResult> Account(Kund model)
+		[Authorize]
+	    public async Task<IActionResult> Account(UserRegisterModel model)
 		{
-			// Login
 			await Initialize();
 
-			if (!IsLoggedIn)
-				return RedirectToAction("Login");
-
 			// Ignore properties
-			ModelState.Remove(nameof(model.AnvandarNamn));
-			ModelState.Remove(nameof(model.Losenord));
-			ModelState.Remove(nameof(model.LosenordConfirm));
+			ModelState.Remove(nameof(model.UserName));
+			ModelState.Remove(nameof(model.Password));
+			ModelState.Remove(nameof(model.PasswordConfirm));
 
-			// Update CurrentKund
-			CurrentKund.Namn = model.Namn;
-			CurrentKund.Email = model.Email;
-			CurrentKund.Postnr = model.Postnr;
-			CurrentKund.Postort = model.Postort;
-			CurrentKund.Gatuadress = model.Gatuadress;
-			CurrentKund.Telefon = model.Telefon;
+			ApplicationUser currentUser = await userManager.GetUserAsync(User);
 
-			// Save
 			if (ModelState.IsValid)
 			{
+				// Update user
+				model.UserName = currentUser.UserName;
+				model.ApplyToApplicationUser(currentUser);
 				await context.SaveChangesAsync();
 			}
 
-			return View(CurrentKund);
+			return View(new UserRegisterModel(currentUser));
 		}
 
 		[HttpGet]
@@ -80,7 +70,7 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-			if (IsLoggedIn)
+			if (IsSignedIn)
 				return RedirectToAction("Account");
 
 			return View();
@@ -92,33 +82,20 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-			if (IsLoggedIn)
+			if (IsSignedIn)
 				return RedirectToAction("Account");
 
 			if (!ModelState.IsValid)
 				return View(login);
 
-			string trimmed = login.AnvandarNamn.Trim();
-			Kund kund = await context.Kund.SingleOrDefaultAsync(k => UsernamesEquals(k, trimmed));
+			SignInResult result = await signInManager.PasswordSignInAsync(login.AnvandarNamn, login.Losenord, false, false);
 
-			if (kund == null)
+			if (!result.Succeeded)
 			{
-				// Login failed : username
-				ModelState.AddModelError(nameof(login.AnvandarNamn), "Felaktigt användarnamn.");
-				AuthLogout();
+				ModelState.AddModelError(nameof(login.AnvandarNamn), "Felaktig inloggning.");
 				return View(login);
 			}
 
-			if (kund.Losenord != login.Losenord)
-			{
-				// Login failed : password
-				ModelState.AddModelError(nameof(login.Losenord), "Felaktigt lösenord.");
-				AuthLogout();
-				return View(login);
-			}
-
-			// Login success
-			AuthLogin(kund.KundId);
 			return RedirectToAction("Account");
 		}
 
@@ -127,7 +104,7 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-			if (IsLoggedIn)
+			if (IsSignedIn)
 				return RedirectToAction("Account");
 
 			return View();
@@ -135,68 +112,46 @@ namespace NackademinUppgift07.Controllers
 
 		[HttpPost]
 	    [AutoValidateAntiforgeryToken]
-	    public async Task<IActionResult> Register(Kund kund)
+	    public async Task<IActionResult> Register(UserRegisterModel register)
 		{
 			await Initialize();
 
-		    if (IsLoggedIn)
+		    if (IsSignedIn)
 			    return RedirectToAction("Account");
 
 			if (!ModelState.IsValid)
-				return View(kund);
+				return View(register);
 
-			string trimmed = kund.AnvandarNamn.Trim();
-			if (await context.Kund.AnyAsync(k => UsernamesEquals(k, trimmed)))
+			var user = new ApplicationUser();
+			register.ApplyToApplicationUser(user);
+
+			IdentityResult result = await userManager.CreateAsync(user, register.Password);
+
+			if (!result.Succeeded)
 			{
-				ModelState.AddModelError(nameof(kund.AnvandarNamn), "Användarnamnet är upptaget.");
-				return View(kund);
+				foreach (IdentityError error in result.Errors)
+				{
+					ModelState.AddModelError(
+						error.Description.IndexOf("password", StringComparison.CurrentCultureIgnoreCase) != -1
+							? nameof(register.Password)
+							: nameof(register.UserName), error.Description);
+				}
+
+				return View(register);
 			}
 
-			kund.AnvandarNamn = trimmed;
-
-		    context.Kund.Add(kund);
-		    await context.SaveChangesAsync();
-
-			AuthLogin(kund.KundId);
+			await signInManager.SignOutAsync();
+			await signInManager.SignInAsync(user, false);
 
 		    return RedirectToAction("Account");
 	    }
 
-	    public IActionResult Logout()
+	    public async Task<IActionResult> Logout()
 	    {
-			AuthLogout();
+		    await signInManager.SignOutAsync();
 
 		    return RedirectToAction("Index", "Tomasos");
 	    }
 		#endregion
-
-	    protected static bool UsernamesEquals(Kund a, string trimmedB)
-	    {
-		    return string.Equals(a.AnvandarNamn.Trim(), trimmedB, StringComparison.CurrentCultureIgnoreCase);
-		}
-
-		protected void AuthLogin(int id)
-	    {
-			HttpContext.Session.SetInt32("Auth", id);
-		}
-
-	    protected void AuthLogout()
-	    {
-		    HttpContext.Session.Remove("Auth");
-	    }
-
-	    protected int? AuthGetCurrentID()
-	    {
-		    return HttpContext.Session.GetInt32("Auth");
-	    }
-
-	    protected async Task<Kund> AuthGetCurrentUser()
-	    {
-		    int? id = AuthGetCurrentID();
-		    if (!id.HasValue) return null;
-
-		    return await context.Kund
-			    .SingleOrDefaultAsync(k => k.KundId == id.Value);
-		}
 	}
 }

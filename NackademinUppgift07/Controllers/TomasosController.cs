@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace NackademinUppgift07.Controllers
 {
-    public class TomasosController : AuthController
+    public partial class TomasosController : Controller
     {
 
 	    private SavedCart _currentCart;
@@ -23,13 +24,8 @@ namespace NackademinUppgift07.Controllers
 				ViewBag.Cart = value;
 		}
 
-	    public TomasosController(TomasosContext context)
-			: base(context)
-	    { }
-
-	    protected override async Task Initialize()
+	    protected async Task Initialize()
 	    {
-		    await base.Initialize();
 		    CurrentCart = SessionLoadCart();
 		    ViewBag.MaträttTypes = await context.MatrattTyp.ToListAsync();
 	    }
@@ -118,19 +114,19 @@ namespace NackademinUppgift07.Controllers
 			return View(await CurrentCart.ConvertToOrder(context));
 		}
 
+		[Authorize]
 	    public async Task<IActionResult> ViewOrder(int id)
 	    {
 		    await Initialize();
 
-		    if (!IsLoggedIn)
-			    return RedirectToAction("Login");
+		    ApplicationUser user = await userManager.GetUserAsync(User);
 
 		    Bestallning cartInQuestion = await context.Bestallning
 			    .Include(b => b.Kund)
 			    .Include(b => b.BestallningMatratt).ThenInclude(bm => bm.Matratt).ThenInclude(m => m.MatrattTypNavigation)
 			    .Include(b => b.BestallningMatratt).ThenInclude(bm => bm.Matratt).ThenInclude(m => m.MatrattProdukt)
 			    .ThenInclude(mp => mp.Produkt)
-			    .SingleOrDefaultAsync(b => b != null && b.BestallningId == id && b.KundId == CurrentKund.KundId);
+			    .SingleOrDefaultAsync(b => b != null && b.BestallningId == id && b.KundId == user.Id);
 
 			if (cartInQuestion == null)
 			    return RedirectToAction("ViewCart");
@@ -138,20 +134,20 @@ namespace NackademinUppgift07.Controllers
 		    return View("ViewCart", cartInQuestion);
 	    }
 
+		[Authorize]
 	    public async Task<IActionResult> OrderCart()
 	    {
 		    await Initialize();
 
-		    if (!IsLoggedIn)
-			    return RedirectToAction("ViewCart");
-
 		    if (CurrentCart.TotalCount == 0)
 			    return RedirectToAction("ViewCart");
 
-		    Bestallning cart = await CurrentCart.ConvertToOrder(context);
-		    context.Attach(CurrentKund);
-		    cart.Kund = CurrentKund;
-		    cart.KundId = CurrentKund.KundId;
+		    ApplicationUser user = await userManager.GetUserAsync(User);
+
+			Bestallning cart = await CurrentCart.ConvertToOrder(context);
+		    context.Attach(user);
+		    cart.Kund = user;
+		    cart.KundId = user.Id;
 
 			foreach (BestallningMatratt bestallningMatratt in cart.BestallningMatratt)
 			{
@@ -175,21 +171,21 @@ namespace NackademinUppgift07.Controllers
 		    });
 	    }
 
+		[Authorize]
 	    public async Task<IActionResult> ListOrders()
 	    {
 		    await Initialize();
 
-		    if (!IsLoggedIn)
-			    return RedirectToAction("Login");
+		    ApplicationUser user = await userManager.GetUserAsync(User);
 
-		    CurrentKund = await context.Kund
+			ApplicationUser filledUser = await context.Users
 				.Include(k => k.Bestallning)
 					.ThenInclude(b => b.BestallningMatratt)
 					.ThenInclude(bm => bm.Matratt)
 					.ThenInclude(m => m.MatrattTypNavigation)
-				.SingleAsync(k => k.KundId == CurrentKund.KundId);
+				.SingleAsync(k => k.Id == user.Id);
 
-		    return View();
+		    return View(filledUser);
 	    }
 		#endregion
 
