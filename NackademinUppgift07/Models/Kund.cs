@@ -52,6 +52,7 @@ namespace NackademinUppgift07.Models
 	    public string Losenord { get; set; }
 
 	    [Display(Name = "Bekräfta lösenord")]
+		[Required(ErrorMessage = "Var god skriv ditt lösenord igen.")]
 	    [MaxLength(20, ErrorMessage = "Lösenordet får max vara 20 karaktärer.")]
 	    [Compare(nameof(Losenord), ErrorMessage = "Lösenorden måste matcha.")]
 	    [DataType(DataType.Password)]

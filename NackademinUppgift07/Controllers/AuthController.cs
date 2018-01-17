@@ -41,42 +41,39 @@ namespace NackademinUppgift07.Controllers
 			if (!IsLoggedIn)
 				return RedirectToAction("Login");
 
-			return View(new ViewKund(CurrentKund));
+			return View(CurrentKund);
 		}
 
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
-	    public async Task<IActionResult> Account(ViewKund changed)
+	    public async Task<IActionResult> Account(Kund model)
 		{
+			// Login
 			await Initialize();
 
 			if (!IsLoggedIn)
 				return RedirectToAction("Login");
 
-			if (!ModelState.IsValid)
-				return View(changed);
+			// Ignore properties
+			ModelState.Remove(nameof(model.AnvandarNamn));
+			ModelState.Remove(nameof(model.Losenord));
+			ModelState.Remove(nameof(model.LosenordConfirm));
 
-			if (CurrentKund.Losenord != changed.OldLosenord)
+			// Update CurrentKund
+			CurrentKund.Namn = model.Namn;
+			CurrentKund.Email = model.Email;
+			CurrentKund.Postnr = model.Postnr;
+			CurrentKund.Postort = model.Postort;
+			CurrentKund.Gatuadress = model.Gatuadress;
+			CurrentKund.Telefon = model.Telefon;
+
+			// Save
+			if (ModelState.IsValid)
 			{
-				ModelState.AddModelError(nameof(changed.OldLosenord), "Felaktigt lösenord.");
-				return View(changed);
+				await context.SaveChangesAsync();
 			}
 
-			if (!string.IsNullOrEmpty(changed.NewLosenord))
-			{
-				CurrentKund.Losenord = changed.NewLosenord;
-			}
-
-			CurrentKund.Namn = changed.Namn;
-			CurrentKund.Email = changed.Email;
-			CurrentKund.Postnr = changed.Postnr;
-			CurrentKund.Postort = changed.Postort;
-			CurrentKund.Gatuadress = changed.Gatuadress;
-			CurrentKund.Telefon = changed.Telefon;
-
-			await context.SaveChangesAsync();
-			
-			return View(new ViewKund(CurrentKund));
+			return View(CurrentKund);
 		}
 
 		[HttpGet]
@@ -102,8 +99,8 @@ namespace NackademinUppgift07.Controllers
 			if (!ModelState.IsValid)
 				return View(login);
 
-			Kund kund = await context.Kund.SingleOrDefaultAsync(k =>
-				string.Equals(k.AnvandarNamn, login.AnvandarNamn, StringComparison.CurrentCultureIgnoreCase));
+			string trimmed = login.AnvandarNamn.Trim();
+			Kund kund = await context.Kund.SingleOrDefaultAsync(k => UsernamesEquals(k, trimmed));
 
 			if (kund == null)
 			{
@@ -149,15 +146,14 @@ namespace NackademinUppgift07.Controllers
 			if (!ModelState.IsValid)
 				return View(kund);
 
-			string trimmedName = kund.AnvandarNamn.Trim();
-			if (await context.Kund
-				.AnyAsync(k => string.Equals(k.AnvandarNamn.Trim(), trimmedName, StringComparison.CurrentCultureIgnoreCase)))
+			string trimmed = kund.AnvandarNamn.Trim();
+			if (await context.Kund.AnyAsync(k => UsernamesEquals(k, trimmed)))
 			{
 				ModelState.AddModelError(nameof(kund.AnvandarNamn), "Användarnamnet är upptaget.");
 				return View(kund);
 			}
 
-			kund.AnvandarNamn = trimmedName;
+			kund.AnvandarNamn = trimmed;
 
 		    context.Kund.Add(kund);
 		    await context.SaveChangesAsync();
@@ -175,7 +171,12 @@ namespace NackademinUppgift07.Controllers
 	    }
 		#endregion
 
-	    protected void AuthLogin(int id)
+	    protected static bool UsernamesEquals(Kund a, string trimmedB)
+	    {
+		    return string.Equals(a.AnvandarNamn.Trim(), trimmedB, StringComparison.CurrentCultureIgnoreCase);
+		}
+
+		protected void AuthLogin(int id)
 	    {
 			HttpContext.Session.SetInt32("Auth", id);
 		}

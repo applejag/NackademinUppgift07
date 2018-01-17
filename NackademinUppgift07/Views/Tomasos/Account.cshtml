@@ -1,4 +1,4 @@
-﻿@model ViewKund
+﻿@model Kund
 
 @{
     ViewData["Title"] = "Konto";
@@ -10,8 +10,8 @@
 		<legend>Ändra profildetaljer</legend>
 		<div asp-validation-summary="All"></div>
 		<p>
-			<label asp-for="CurrentKund.AnvandarNamn"></label>
-			<input asp-for="CurrentKund.AnvandarNamn" disabled="disabled" />
+			<label asp-for="AnvandarNamn"></label>
+			<input type="text" data-val="false" disabled="disabled" value="@Model.AnvandarNamn" />
 		</p>
 		<hr/>
 		<p>
@@ -46,22 +46,6 @@
 			<input asp-for="Postort" />
 		</p>
 		<hr />
-		<p>
-			<span asp-validation-for="NewLosenord"></span>
-			<label asp-for="NewLosenord"></label>
-			<input asp-for="NewLosenord" />
-		</p>
-		<p>
-			<span asp-validation-for="NewLosenordConfirm"></span>
-			<label asp-for="NewLosenordConfirm"></label>
-			<input asp-for="NewLosenordConfirm" />
-		</p>
-		<hr />
-		<p>
-			<span asp-validation-for="OldLosenord"></span>
-			<label asp-for="OldLosenord"></label>
-			<input asp-for="OldLosenord" />
-		</p>
 		<p>
 			<input type="submit" value="Spara" />
 		</p>
