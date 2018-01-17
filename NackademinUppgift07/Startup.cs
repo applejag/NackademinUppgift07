@@ -49,16 +49,17 @@ namespace NackademinUppgift07
 
 	        app.UseMvc(router =>
 			{
-				router.MapRoute("maträtt", "{beskrivning?}", new
-				{
-					controller = "Tomasos",
-					action = "Index",
-				});
 
 				router.MapRoute("default", "{action}", new
 		        {
 			        controller = "Tomasos",
 		        });
+
+				router.MapRoute("maträtt", "{beskrivning?}", new
+				{
+					controller = "Tomasos",
+					action = "Index",
+				});
 	        });
         }
     }

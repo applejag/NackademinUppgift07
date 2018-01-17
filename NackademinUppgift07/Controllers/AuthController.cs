@@ -22,7 +22,6 @@ namespace NackademinUppgift07.Controllers
 
 		public bool IsLoggedIn => CurrentKund != null;
 
-
 	    protected AuthController(TomasosContext context)
 	    {
 		    this.context = context;

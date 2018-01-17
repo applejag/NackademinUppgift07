@@ -69,7 +69,7 @@ namespace NackademinUppgift07.Controllers
 			    .ToListAsync());
 	    }
 
-	    public async Task<IActionResult> AddToCart(int id)
+	    public async Task<IActionResult> AddToCart(int id, string source)
 	    {
 		    await Initialize();
 
@@ -79,7 +79,36 @@ namespace NackademinUppgift07.Controllers
 			if (maträtt != null)
 				await SessionAddToCart(maträtt);
 
-		    return RedirectToAction("Index");
+		    return RedirectToAction("Index", new
+		    {
+			    beskrivning = source,
+		    });
+	    }
+
+	    public async Task<IActionResult> RemoveFromCart(int id)
+	    {
+		    await Initialize();
+
+		    SavedCart cart = SessionLoadCart();
+
+		    for (var i = 0; i < cart.orders.Length; i++)
+		    {
+			    if (cart.orders[i].foodId == id && cart.orders[i].count > 0)
+				    cart.orders[i].count--;
+		    }
+
+			SessionSaveCart(cart);
+
+		    return RedirectToAction("ViewCart");
+	    }
+
+	    public async Task<IActionResult> ClearCart()
+	    {
+		    await Initialize();
+
+			SessionSaveCart(new SavedCart());
+
+		    return RedirectToAction("ViewCart");
 	    }
 
 	    public async Task<IActionResult> ViewCart()
@@ -187,6 +216,7 @@ namespace NackademinUppgift07.Controllers
 
 		protected void SessionSaveCart(SavedCart cart)
 		{
+			cart.orders = cart.orders?.Where(o => o.count >= 0).ToArray();
 			string serialized = JsonConvert.SerializeObject(cart);
 
 			HttpContext.Session.SetString("Cart", serialized);

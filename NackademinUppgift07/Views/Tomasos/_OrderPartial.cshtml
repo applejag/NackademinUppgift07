@@ -23,7 +23,13 @@
 				{
 					<tr>
 						<td>@group.Matratt.MatrattNamn <i>(@group.Matratt.MatrattTypNavigation.Beskrivning)</i></td>
-						<td class="cart-number">@group.Antal st</td>
+						<td>
+							<span class="cart-number">@group.Antal st</span>
+							@if (Model.Kund == null)
+							{
+								<a asp-action="RemoveFromCart" asp-route-id="@group.MatrattId">Ta bort en</a>
+							}
+						</td>
 						<td class="cart-number">@group.Matratt.Pris.ToString("C")</td>
 						<td class="cart-number">@((group.Matratt.Pris * group.Antal).ToString("C"))</td>
 					</tr>

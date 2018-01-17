@@ -22,7 +22,7 @@ else
 				<div class="mat-head-right">
 					<div class="mat-price">@mat.Pris.ToString("C")</div>
 					<div class="mat-add">
-						<a asp-action="AddToCart" asp-route-id="@mat.MatrattId">Lägg till i kundvagn</a>
+						<a asp-action="AddToCart" asp-route-id="@mat.MatrattId" asp-route-source="@ViewData["Title"]">Lägg till i kundvagn</a>
 					</div>
 				</div>
 			</div>

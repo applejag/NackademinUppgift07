@@ -11,6 +11,19 @@
 @if (Model?.Kund == null)
 {
 	<section>
+		@if (Model?.TotalCount > 0)
+		{
+			<p>
+				<a class="button" asp-action="ClearCart">Töm varukorg</a>
+			</p>
+		}
+		else
+		{
+			<p>
+				<a class="button disabled">Töm varukorg</a>
+			</p>
+		}
+
 		@if (kund == null)
 		{
 			<p>
