@@ -31,20 +31,43 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    await base.Initialize();
 		    CurrentCart = SessionLoadCart();
+		    ViewBag.MaträttTypes = await context.MatrattTyp.ToListAsync();
 	    }
 
 	    #region Actions
-		public async Task<IActionResult> Index()
-        {
-	        await Initialize();
+	    public async Task<IActionResult> Index(string beskrivning)
+	    {
+		    await Initialize();
 
-	        List<Matratt> maträtter = await context.Matratt
-				.Include(m => m.MatrattTypNavigation)
-				.Include(m => m.MatrattProdukt).ThenInclude(m => m.Produkt)
-				.ToListAsync();
+		    ViewData["Title"] = "Alla maträtter";
 
-			return View(maträtter);
-        }
+			// Initial query
+		    IIncludableQueryable<Matratt, Produkt> matratts = context.Matratt
+			    .Include(m => m.MatrattTypNavigation)
+			    .Include(m => m.MatrattProdukt).ThenInclude(m => m.Produkt);
+
+			// All items
+		    if (string.IsNullOrEmpty(beskrivning))
+			    return View(await matratts.ToListAsync());
+
+			// Try filter
+			MatrattTyp typ = await context.MatrattTyp
+			    .FirstOrDefaultAsync(m =>
+				    m.Beskrivning.IndexOf(beskrivning, StringComparison.CurrentCultureIgnoreCase) != -1);
+
+			// Invalid filter?
+		    if (typ == null)
+			    return RedirectToAction("Index", new
+			    {
+				    beskrivning = string.Empty,
+			    });
+
+			// Filtered items
+		    ViewData["Title"] = typ.Beskrivning;
+		    return View(await matratts
+				.Where(m => typ == null || m.MatrattTyp == typ.MatrattTyp1)
+			    .ToListAsync());
+	    }
 
 	    public async Task<IActionResult> AddToCart(int id)
 	    {

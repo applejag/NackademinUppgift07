@@ -1,15 +1,24 @@
 ﻿@model List<Matratt>
 
 @{
-    ViewData["Title"] = "Tomasos";
+	//ViewData["Title"] = "Tomasos";
 	Layout = "~/Views/_LayoutMain.cshtml";
 }
 
-@foreach (Matratt mat in Model)
+@if (Model.Count == 0)
+{
+	<p>
+		<i>Det finns inga maträtter inom denna kategori.</i>
+	</p>
+}
+else
+{
+	foreach (Matratt mat in Model.OrderBy(m => m.MatrattTypNavigation.Beskrivning).ThenBy(m => m.MatrattNamn))
 	{
 		<section class="mat">
 			<div class="mat-head">
-				<h2 class="mat-name">@mat.MatrattNamn <span class="mat-type">@mat.MatrattTypNavigation.Beskrivning</span></h2>
+				<h2 class="mat-name">@mat.MatrattNamn <span class="mat-type">@mat.MatrattTypNavigation.Beskrivning</span>
+				</h2>
 				<div class="mat-head-right">
 					<div class="mat-price">@mat.Pris.ToString("C")</div>
 					<div class="mat-add">
@@ -31,3 +40,4 @@
 			</div>
 		</section>
 	}
+}

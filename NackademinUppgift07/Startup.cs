@@ -48,8 +48,14 @@ namespace NackademinUppgift07
 	        app.UseStaticFiles();
 
 	        app.UseMvc(router =>
-	        {
-		        router.MapRoute("default", "{action=Index}", new
+			{
+				router.MapRoute("maträtt", "{beskrivning?}", new
+				{
+					controller = "Tomasos",
+					action = "Index",
+				});
+
+				router.MapRoute("default", "{action}", new
 		        {
 			        controller = "Tomasos",
 		        });

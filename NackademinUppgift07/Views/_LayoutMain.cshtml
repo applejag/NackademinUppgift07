@@ -2,6 +2,7 @@
 @{
 	Kund kund = ViewBag.Kund;
 	TomasosController.SavedCart cart = ViewBag.Cart;
+	List<MatrattTyp> matrattTypes = ViewBag.MaträttTypes;
 }
 
 <!DOCTYPE html>
@@ -24,7 +25,11 @@
 </header>
 <nav>
 	<ul>
-		<li><a asp-action="Index">Maträtter</a></li>
+		<li><a asp-action="Index" asp-route-beskrivning="">Alla</a></li>
+		@foreach (MatrattTyp type in matrattTypes)
+		{
+			<li><a asp-action="Index" asp-route-beskrivning="@type.Beskrivning">@type.Beskrivning</a></li>
+		}
 	</ul>
 	<ul>
 	@if (kund == null)
