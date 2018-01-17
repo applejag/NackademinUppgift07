@@ -10,7 +10,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>@ViewData["Title"]</title>
+	<title>@ViewData["Title"] - Tomasos</title>
 
 	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
@@ -25,17 +25,19 @@
 <nav>
 	<ul>
 		<li><a asp-action="Index">Maträtter</a></li>
-		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
 	</ul>
 	<ul>
 	@if (kund == null)
 	{
+		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
 		<li><a asp-action="Login">Logga in</a></li>
 		<li><a asp-action="Register">Registrera ny kund</a></li>
 	}
 	else
 	{
+		<li><a asp-action="ViewCart">Kundvagn (@cart.TotalCount rätt@(cart.TotalCount == 1 ? "" : "er"))</a></li>
 		<li><a asp-action="Account">Min profil</a></li>
+		<li><a asp-action="ListOrders">Mina beställningar</a></li>
 		<li><a asp-action="Logout">Logga ut</a></li>
 	}
 	</ul>

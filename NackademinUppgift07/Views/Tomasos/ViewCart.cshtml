@@ -6,59 +6,7 @@
 	Kund kund = ViewBag.Kund;
 }
 
-<section>
-	<table>
-		<thead>
-		<tr>
-			<th>Maträtt</th>
-			<th>Antal</th>
-			<th>Enhetspris</th>
-			<th>Pris</th>
-		</tr>
-		</thead>
-		<tbody>
-		@if (Model == null || Model.BestallningMatratt.Sum(b => b.Antal) == 0)
-		{
-			<tr>
-				<td colspan="4"><i>Beställningen är tom.</i></td>
-			</tr>
-		}
-		else
-		{
-			foreach (BestallningMatratt group in Model.BestallningMatratt.OrderBy(g => g.Matratt.MatrattNamn))
-			{
-				<tr>
-					<td>@group.Matratt.MatrattNamn <i>(@group.Matratt.MatrattTypNavigation.Beskrivning)</i></td>
-					<td class="cart-number">@group.Antal.ToString("F2")</td>
-					<td class="cart-number">@group.Matratt.Pris.ToString("C")</td>
-					<td class="cart-number">@((group.Matratt.Pris * group.Antal).ToString("C"))</td>
-				</tr>
-			}
-		}
-		</tbody>
-		<tfoot>
-		<tr>
-			<th colspan="3">Total antal</th>
-			<th class="cart-number">@((Model?.TotalCount ?? 0).ToString("F2"))</th>
-		</tr>
-		<tr>
-			<th colspan="3">Total pris</th>
-			<th class="cart-number">@((Model?.Totalbelopp ?? 0).ToString("C"))</th>
-		</tr>
-		@if (Model?.Kund != null)
-		{
-			<tr>
-				<th colspan="3">Beställningsdatum</th>
-				<th class="cart-number">@Model.BestallningDatum.ToString("d")</th>
-			</tr>
-			<tr>
-				<th colspan="3">Levererad</th>
-				<th>@(Model.Levererad ? "Ja" : "Nej")</th>
-			</tr>
-		}
-		</tfoot>
-	</table>
-</section>
+@{ await Html.RenderPartialAsync("_OrderPartial", Model); }
 
 @if (Model?.Kund == null)
 {
@@ -67,6 +15,13 @@
 		{
 			<p>
 				<span class="form-error">Du måste vara inloggad för att kunna beställa din kundvagn.</span>
+				<a class="button disabled">Beställ varor</a>
+			</p>
+		}
+		else if (Model == null || Model.TotalCount == 0)
+		{
+			<p>
+				<span class="form-error">Kundvagnen måste innehålla minst 1 matvara.</span>
 				<a class="button disabled">Beställ varor</a>
 			</p>
 		}

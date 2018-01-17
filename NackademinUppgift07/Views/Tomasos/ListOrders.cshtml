@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Tidigare beställningar";
+    Layout = "~/Views/_LayoutMain.cshtml";
+	Kund kund = ViewBag.Kund;
+}
+
+@if (kund.Bestallning.Count == 0)
+{
+	<section>
+		<p>
+			<i>Du har inga tidigare beställningar.</i>
+		</p>
+	</section>
+}
+else
+{
+	foreach (Bestallning b in kund.Bestallning.OrderByDescending(b => b.BestallningDatum))
+	{
+		await Html.RenderPartialAsync("_OrderPartial", b);
+	}
+}

@@ -122,6 +122,23 @@ namespace NackademinUppgift07.Controllers
 			    id = cart.BestallningId,
 		    });
 	    }
+
+	    public async Task<IActionResult> ListOrders()
+	    {
+		    await Initialize();
+
+		    if (!IsLoggedIn)
+			    return RedirectToAction("Login");
+
+		    CurrentKund = await context.Kund
+				.Include(k => k.Bestallning)
+					.ThenInclude(b => b.BestallningMatratt)
+					.ThenInclude(bm => bm.Matratt)
+					.ThenInclude(m => m.MatrattTypNavigation)
+				.SingleAsync(k => k.KundId == CurrentKund.KundId);
+
+		    return View();
+	    }
 		#endregion
 
 		protected async Task SessionAddToCart(Matratt maträtt)
