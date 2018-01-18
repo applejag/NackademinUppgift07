@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Models;
+using NackademinUppgift07.Models.Services;
 using Newtonsoft.Json;
 
 namespace NackademinUppgift07.Controllers
@@ -21,22 +22,24 @@ namespace NackademinUppgift07.Controllers
 	    protected readonly TomasosContext context;
 	    protected readonly UserManager<ApplicationUser> userManager;
 	    protected readonly SignInManager<ApplicationUser> signInManager;
+	    protected readonly CartManager cartManager;
 
 	    public bool IsSignedIn => signInManager.IsSignedIn(User);
 
 		public TomasosController(
 		    TomasosContext context,
 		    UserManager<ApplicationUser> userManager,
-		    SignInManager<ApplicationUser> signInManager)
+		    SignInManager<ApplicationUser> signInManager,
+			CartManager cartManager)
 	    {
 		    this.context = context;
 		    this.userManager = userManager;
 		    this.signInManager = signInManager;
+		    this.cartManager = cartManager;
 	    }
 
 		protected async Task Initialize()
 		{
-			ViewBag.Cart = new SavedCart(HttpContext);
 		    ViewBag.MaträttTypes = await context.MatrattTyp.ToListAsync();
 	    }
 
@@ -83,9 +86,9 @@ namespace NackademinUppgift07.Controllers
 				.SingleOrDefaultAsync(m => m.MatrattId == id);
 
 			if (maträtt != null)
-				await SessionAddToCart(maträtt);
+				cartManager.AddToCart(maträtt.MatrattId);
 
-		    return RedirectToAction("Index", new
+			return RedirectToAction("Index", new
 		    {
 			    beskrivning = source,
 		    });
@@ -95,15 +98,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    await Initialize();
 
-		    var cart = new SavedCart(HttpContext);
-
-		    for (var i = 0; i < cart.orders.Length; i++)
-		    {
-			    if (cart.orders[i].foodId == id && cart.orders[i].count > 0)
-				    cart.orders[i].count--;
-		    }
-
-			cart.SaveCart(HttpContext);
+			cartManager.RemoveFromCart(id);
 
 			return RedirectToAction("ViewCart");
 	    }
@@ -112,7 +107,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    await Initialize();
 
-			new SavedCart().SaveCart(HttpContext);
+			cartManager.ClearCart();
 
 		    return RedirectToAction("ViewCart");
 	    }
@@ -121,7 +116,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 			await Initialize();
 
-			return View(await new SavedCart(HttpContext).ConvertToOrder(context));
+			return View(await cartManager.GetBestallningAsync());
 		}
 
 		[Authorize]
@@ -149,33 +144,19 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    await Initialize();
 
-			var currentCart = new SavedCart(HttpContext);
-
-		    if (currentCart.TotalCount == 0)
+		    if (cartManager.SavedCart.TotalCount == 0)
 			    return RedirectToAction("ViewCart");
 
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
-			Bestallning cart = await currentCart.ConvertToOrder(context);
-		    context.Attach(user);
+		    Bestallning cart = await cartManager.GetBestallningAsync();
 		    cart.Kund = user;
-		    cart.KundId = user.Id;
-
-			foreach (BestallningMatratt bestallningMatratt in cart.BestallningMatratt)
-			{
-				context.Attach(bestallningMatratt.Matratt);
-			}
-
-		    cart.Levererad = false;
-		    cart.Totalbelopp = cart.BestallningMatratt
-			    .Sum(bm => bm.Antal * bm.Matratt.Pris);
-		    cart.BestallningDatum = DateTime.Now;
 
 		    context.Bestallning.Add(cart);
 		    await context.SaveChangesAsync();
 
 			// Reset cart
-			new SavedCart().SaveCart(HttpContext);
+			cartManager.ClearCart();
 
 		    return RedirectToAction("ViewOrder", new
 		    {
@@ -200,27 +181,6 @@ namespace NackademinUppgift07.Controllers
 		    return View(filledUser);
 	    }
 		#endregion
-
-		protected async Task SessionAddToCart(Matratt maträtt)
-		{
-			Bestallning cart = await new SavedCart(HttpContext).ConvertToOrder(context);
-			BestallningMatratt group = cart.BestallningMatratt
-				.SingleOrDefault(g => g.MatrattId == maträtt.MatrattId);
-
-			if (group == null)
-				// New group
-				cart.BestallningMatratt.Add(new BestallningMatratt
-				{
-					Matratt = maträtt,
-					MatrattId = maträtt.MatrattId,
-					Antal = 1,
-				});
-			else
-				// Increment existing
-				group.Antal++;
-
-			new SavedCart(cart).SaveCart(HttpContext);
-		}
 
 	}
 }

@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Utility;
 using NackademinUppgift07.Models;
+using NackademinUppgift07.Models.Services;
 
 namespace NackademinUppgift07
 {
@@ -49,6 +50,8 @@ namespace NackademinUppgift07
 		        })
 				.AddEntityFrameworkStores<TomasosContext>()
 		        .AddDefaultTokenProviders();
+
+	        services.AddTransient<CartManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
