@@ -56,7 +56,7 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-			if (IsSignedIn)
+			if (signInManager.IsSignedIn(User))
 				return RedirectToAction("Account");
 
 			return View();
@@ -68,7 +68,7 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-			if (IsSignedIn)
+			if (signInManager.IsSignedIn(User))
 				return RedirectToAction("Account");
 
 			if (!ModelState.IsValid)
@@ -90,7 +90,7 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-			if (IsSignedIn)
+			if (signInManager.IsSignedIn(User))
 				return RedirectToAction("Account");
 
 			return View();
@@ -102,7 +102,7 @@ namespace NackademinUppgift07.Controllers
 		{
 			await Initialize();
 
-		    if (IsSignedIn)
+		    if (signInManager.IsSignedIn(User))
 			    return RedirectToAction("Account");
 
 			if (!ModelState.IsValid)

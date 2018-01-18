@@ -24,8 +24,6 @@ namespace NackademinUppgift07.Controllers
 	    protected readonly SignInManager<ApplicationUser> signInManager;
 	    protected readonly ICartManager cartManager;
 
-	    public bool IsSignedIn => signInManager.IsSignedIn(User);
-
 		public TomasosController(
 		    TomasosContext context,
 		    UserManager<ApplicationUser> userManager,

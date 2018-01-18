@@ -1,4 +1,4 @@
-﻿@inject CartManager cartManager
+﻿@inject ICartManager cartManager
 @{
 	List<MatrattTyp> matrattTypes = ViewBag.MaträttTypes;
 	int cartCount = cartManager.SavedCart.TotalCount;
