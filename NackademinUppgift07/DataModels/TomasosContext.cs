@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace NackademinUppgift07.Models
+namespace NackademinUppgift07.DataModels
 {
     public partial class TomasosContext : IdentityDbContext<ApplicationUser>
     {

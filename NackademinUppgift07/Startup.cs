@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NackademinUppgift07.Models;
+using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Utility;
-using NackademinUppgift07.ViewModels;
+using NackademinUppgift07.Models;
 
 namespace NackademinUppgift07
 {

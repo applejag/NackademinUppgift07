@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace NackademinUppgift07.Models
+namespace NackademinUppgift07.DataModels
 {
     public partial class Bestallning
     {

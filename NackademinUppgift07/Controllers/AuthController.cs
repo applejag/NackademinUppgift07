@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Models;
-using NackademinUppgift07.ViewModels;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NackademinUppgift07.Controllers

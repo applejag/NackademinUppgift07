@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace NackademinUppgift07.Models
+namespace NackademinUppgift07.DataModels
 {
 	public class ApplicationUser : IdentityUser
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NackademinUppgift07.Models
+namespace NackademinUppgift07.DataModels
 {
     public partial class Matratt
     {

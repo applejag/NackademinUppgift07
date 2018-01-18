@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using NackademinUppgift07.Models;
+using NackademinUppgift07.DataModels;
 using System;
 
 namespace NackademinUppgift07.Migrations

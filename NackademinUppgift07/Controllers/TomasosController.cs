@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Models;
 using Newtonsoft.Json;
 
@@ -20,14 +21,6 @@ namespace NackademinUppgift07.Controllers
 	    protected readonly TomasosContext context;
 	    protected readonly UserManager<ApplicationUser> userManager;
 	    protected readonly SignInManager<ApplicationUser> signInManager;
-
-	    private SavedCart _currentCart;
-		public SavedCart CurrentCart
-		{
-			get => _currentCart;
-			set => _currentCart =
-				ViewBag.Cart = value;
-		}
 
 	    public bool IsSignedIn => signInManager.IsSignedIn(User);
 
@@ -42,8 +35,8 @@ namespace NackademinUppgift07.Controllers
 	    }
 
 		protected async Task Initialize()
-	    {
-		    CurrentCart = SessionLoadCart();
+		{
+			ViewBag.Cart = new SavedCart(HttpContext);
 		    ViewBag.MaträttTypes = await context.MatrattTyp.ToListAsync();
 	    }
 
@@ -102,7 +95,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    await Initialize();
 
-		    SavedCart cart = SessionLoadCart();
+		    var cart = new SavedCart(HttpContext);
 
 		    for (var i = 0; i < cart.orders.Length; i++)
 		    {
@@ -110,16 +103,16 @@ namespace NackademinUppgift07.Controllers
 				    cart.orders[i].count--;
 		    }
 
-			SessionSaveCart(cart);
+			cart.SaveCart(HttpContext);
 
-		    return RedirectToAction("ViewCart");
+			return RedirectToAction("ViewCart");
 	    }
 
 	    public async Task<IActionResult> ClearCart()
 	    {
 		    await Initialize();
 
-			SessionSaveCart(new SavedCart());
+			new SavedCart().SaveCart(HttpContext);
 
 		    return RedirectToAction("ViewCart");
 	    }
@@ -128,7 +121,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 			await Initialize();
 
-			return View(await CurrentCart.ConvertToOrder(context));
+			return View(await new SavedCart(HttpContext).ConvertToOrder(context));
 		}
 
 		[Authorize]
@@ -156,12 +149,14 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    await Initialize();
 
-		    if (CurrentCart.TotalCount == 0)
+			var currentCart = new SavedCart(HttpContext);
+
+		    if (currentCart.TotalCount == 0)
 			    return RedirectToAction("ViewCart");
 
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
-			Bestallning cart = await CurrentCart.ConvertToOrder(context);
+			Bestallning cart = await currentCart.ConvertToOrder(context);
 		    context.Attach(user);
 		    cart.Kund = user;
 		    cart.KundId = user.Id;
@@ -180,7 +175,7 @@ namespace NackademinUppgift07.Controllers
 		    await context.SaveChangesAsync();
 
 			// Reset cart
-			SessionSaveCart(new SavedCart());
+			new SavedCart().SaveCart(HttpContext);
 
 		    return RedirectToAction("ViewOrder", new
 		    {
@@ -208,7 +203,7 @@ namespace NackademinUppgift07.Controllers
 
 		protected async Task SessionAddToCart(Matratt maträtt)
 		{
-			Bestallning cart = await CurrentCart.ConvertToOrder(context);
+			Bestallning cart = await new SavedCart(HttpContext).ConvertToOrder(context);
 			BestallningMatratt group = cart.BestallningMatratt
 				.SingleOrDefault(g => g.MatrattId == maträtt.MatrattId);
 
@@ -224,63 +219,8 @@ namespace NackademinUppgift07.Controllers
 				// Increment existing
 				group.Antal++;
 
-			SessionSaveCart(new SavedCart(cart));
+			new SavedCart(cart).SaveCart(HttpContext);
 		}
 
-		protected void SessionSaveCart(SavedCart cart)
-		{
-			cart.orders = cart.orders?.Where(o => o.count >= 0).ToArray();
-			string serialized = JsonConvert.SerializeObject(cart);
-
-			HttpContext.Session.SetString("Cart", serialized);
-		}
-
-		protected SavedCart SessionLoadCart()
-		{
-			string serialized = HttpContext.Session.GetString("Cart");
-
-			if (serialized == null)
-				return new SavedCart();
-
-			var savedCart = JsonConvert.DeserializeObject<SavedCart>(serialized);
-
-			return savedCart;
-		}
-
-		public struct SavedCart
-	    {
-		    public (int foodId, int count)[] orders;
-		    public int TotalCount => orders?.Sum(o => o.count) ?? 0;
-
-		    public SavedCart(Bestallning cart)
-		    {
-				orders = (from b in cart.BestallningMatratt
-						  select (foodId: b.Matratt.MatrattId, count: b.Antal))
-						  .ToArray();
-		    }
-
-		    public async Task<Bestallning> ConvertToOrder(TomasosContext context)
-		    {
-			    if (orders == null)
-				    return new Bestallning();
-
-			    var matratts = context.Matratt
-					.Include(m => m.MatrattTypNavigation)
-				    .Include(m => m.MatrattProdukt).ThenInclude(p => p.Produkt);
-
-			    return new Bestallning
-			    {
-				    BestallningMatratt =
-					    await (from mat in matratts
-						    join order in orders on mat.MatrattId equals order.foodId
-						    select new BestallningMatratt
-						    {
-							    Matratt = mat,
-							    MatrattId = mat.MatrattId,
-							    Antal = order.count
-						    }).ToListAsync(),
-			    };
-		    }
-		}
 	}
 }

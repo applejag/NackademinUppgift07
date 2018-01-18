@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NackademinUppgift07.ViewModels
+namespace NackademinUppgift07.Models
 {
 	public class ViewLogin
 	{

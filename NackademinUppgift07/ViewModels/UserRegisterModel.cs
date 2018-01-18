@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using NackademinUppgift07.Models;
+using NackademinUppgift07.DataModels;
 
-namespace NackademinUppgift07.ViewModels
+namespace NackademinUppgift07.Models
 {
 	public class UserRegisterModel
 	{
