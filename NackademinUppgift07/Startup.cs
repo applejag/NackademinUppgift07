@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NackademinUppgift07.Models;
+using NackademinUppgift07.Utility;
+using NackademinUppgift07.ViewModels;
 
 namespace NackademinUppgift07
 {
@@ -34,7 +37,16 @@ namespace NackademinUppgift07
 	        services.AddSession();
 	        services.AddDistributedMemoryCache();
 
-	        services.AddIdentity<ApplicationUser, IdentityRole>()
+	        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+		        {
+					// Weaken the password validator
+			        options.Password.RequireDigit = false;
+			        options.Password.RequireNonAlphanumeric = false;
+			        options.Password.RequireUppercase = false;
+			        options.Password.RequireLowercase = false;
+			        options.Password.RequiredLength =
+				        AttributesUtilities.Presets.GetMinLength<ViewLogin>(nameof(ViewLogin.Losenord)) ?? 6;
+		        })
 				.AddEntityFrameworkStores<TomasosContext>()
 		        .AddDefaultTokenProviders();
         }
