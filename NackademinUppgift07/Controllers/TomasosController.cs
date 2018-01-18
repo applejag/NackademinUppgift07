@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,10 @@ namespace NackademinUppgift07.Controllers
     public partial class TomasosController : Controller
     {
 
+	    protected readonly TomasosContext context;
+	    protected readonly UserManager<ApplicationUser> userManager;
+	    protected readonly SignInManager<ApplicationUser> signInManager;
+
 	    private SavedCart _currentCart;
 		public SavedCart CurrentCart
 		{
@@ -24,7 +29,19 @@ namespace NackademinUppgift07.Controllers
 				ViewBag.Cart = value;
 		}
 
-	    protected async Task Initialize()
+	    public bool IsSignedIn => signInManager.IsSignedIn(User);
+
+		public TomasosController(
+		    TomasosContext context,
+		    UserManager<ApplicationUser> userManager,
+		    SignInManager<ApplicationUser> signInManager)
+	    {
+		    this.context = context;
+		    this.userManager = userManager;
+		    this.signInManager = signInManager;
+	    }
+
+		protected async Task Initialize()
 	    {
 		    CurrentCart = SessionLoadCart();
 		    ViewBag.MaträttTypes = await context.MatrattTyp.ToListAsync();

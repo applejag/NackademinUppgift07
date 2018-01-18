@@ -13,21 +13,7 @@ namespace NackademinUppgift07.Controllers
 {
     public partial class TomasosController
     {
-	    protected readonly TomasosContext context;
-	    protected readonly UserManager<ApplicationUser> userManager;
-	    protected readonly SignInManager<ApplicationUser> signInManager;
 
-	    protected TomasosController(
-			TomasosContext context,
-			UserManager<ApplicationUser> userManager,
-			SignInManager<ApplicationUser> signInManager)
-	    {
-		    this.context = context;
-		    this.userManager = userManager;
-		    this.signInManager = signInManager;
-	    }
-
-	    public bool IsSignedIn => signInManager.IsSignedIn(User);
 
 		#region Actions
 		[Authorize]
