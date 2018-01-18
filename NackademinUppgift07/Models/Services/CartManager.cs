@@ -8,7 +8,7 @@ using NackademinUppgift07.Utility;
 
 namespace NackademinUppgift07.Models.Services
 {
-	public interface ICartService
+	public interface ICartManager
 	{
 		SavedCart SavedCart { get; }
 
@@ -20,13 +20,13 @@ namespace NackademinUppgift07.Models.Services
 		Task<Bestallning> GetBestallningAsync();
 	}
 
-	public class CartManager : ICartService
+	public class CartManager : ICartManager
 	{
-		private const string SESSION_KEY = "_cart";
+		protected const string SESSION_KEY = "_cart";
 
-		protected SavedCart cart;
 		public SavedCart SavedCart => cart;
 
+		protected SavedCart cart;
 		protected readonly HttpContext httpContext;
 		protected readonly TomasosContext dbContext;
 

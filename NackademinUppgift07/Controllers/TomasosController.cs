@@ -22,7 +22,7 @@ namespace NackademinUppgift07.Controllers
 	    protected readonly TomasosContext context;
 	    protected readonly UserManager<ApplicationUser> userManager;
 	    protected readonly SignInManager<ApplicationUser> signInManager;
-	    protected readonly CartManager cartManager;
+	    protected readonly ICartManager cartManager;
 
 	    public bool IsSignedIn => signInManager.IsSignedIn(User);
 
@@ -30,7 +30,7 @@ namespace NackademinUppgift07.Controllers
 		    TomasosContext context,
 		    UserManager<ApplicationUser> userManager,
 		    SignInManager<ApplicationUser> signInManager,
-			CartManager cartManager)
+			ICartManager cartManager)
 	    {
 		    this.context = context;
 		    this.userManager = userManager;

@@ -51,7 +51,7 @@ namespace NackademinUppgift07
 				.AddEntityFrameworkStores<TomasosContext>()
 		        .AddDefaultTokenProviders();
 
-	        services.AddTransient<CartManager>();
+	        services.AddTransient<ICartManager, CartManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
