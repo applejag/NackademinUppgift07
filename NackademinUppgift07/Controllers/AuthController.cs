@@ -1,23 +1,33 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Models;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NackademinUppgift07.Controllers
 {
-    public partial class TomasosController
+    public class AuthController : Controller
     {
 
+	    private readonly UserManager<ApplicationUser> userManager;
+	    private readonly SignInManager<ApplicationUser> signInManager;
+	    private readonly TomasosContext dbContext;
 
-		#region Actions
+	    public AuthController(
+			TomasosContext dbContext,
+		    UserManager<ApplicationUser> userManager,
+		    SignInManager<ApplicationUser> signInManager)
+	    {
+		    this.dbContext = dbContext;
+		    this.userManager = userManager;
+		    this.signInManager = signInManager;
+	    }
+
 		[Authorize]
-		public async Task<IActionResult> Account()
+		public async Task<IActionResult> Index()
 		{
 			ApplicationUser currentUser = await userManager.GetUserAsync(User);
 
@@ -27,7 +37,7 @@ namespace NackademinUppgift07.Controllers
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
 		[Authorize]
-	    public async Task<IActionResult> Account(UserRegisterModel model)
+	    public async Task<IActionResult> Index(UserRegisterModel model)
 		{
 			// Ignore properties
 			ModelState.Remove(nameof(model.UserName));
@@ -41,17 +51,17 @@ namespace NackademinUppgift07.Controllers
 				// Update user
 				model.UserName = currentUser.UserName;
 				model.ApplyToApplicationUser(currentUser);
-				await context.SaveChangesAsync();
+				await dbContext.SaveChangesAsync();
 			}
 
 			return View(new UserRegisterModel(currentUser));
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Login()
+		public IActionResult Login()
 		{
 			if (signInManager.IsSignedIn(User))
-				return RedirectToAction("Account");
+				return RedirectToAction("Index");
 
 			return View();
 		}
@@ -61,7 +71,7 @@ namespace NackademinUppgift07.Controllers
 	    public async Task<IActionResult> Login(ViewLogin login)
 		{
 			if (signInManager.IsSignedIn(User))
-				return RedirectToAction("Account");
+				return RedirectToAction("Index");
 
 			if (!ModelState.IsValid)
 				return View(login);
@@ -74,14 +84,14 @@ namespace NackademinUppgift07.Controllers
 				return View(login);
 			}
 
-			return RedirectToAction("Account");
+			return RedirectToAction("Index");
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Register()
+		public IActionResult Register()
 		{
 			if (signInManager.IsSignedIn(User))
-				return RedirectToAction("Account");
+				return RedirectToAction("Index");
 
 			return View();
 		}
@@ -91,7 +101,7 @@ namespace NackademinUppgift07.Controllers
 	    public async Task<IActionResult> Register(UserRegisterModel register)
 		{
 		    if (signInManager.IsSignedIn(User))
-			    return RedirectToAction("Account");
+			    return RedirectToAction("Index");
 
 			if (!ModelState.IsValid)
 				return View(register);
@@ -117,7 +127,7 @@ namespace NackademinUppgift07.Controllers
 			await signInManager.SignOutAsync();
 			await signInManager.SignInAsync(user, false);
 
-		    return RedirectToAction("Account");
+		    return RedirectToAction("Index");
 	    }
 
 	    public async Task<IActionResult> Logout()
@@ -126,6 +136,5 @@ namespace NackademinUppgift07.Controllers
 
 		    return RedirectToAction("Index", "Tomasos");
 	    }
-		#endregion
 	}
 }

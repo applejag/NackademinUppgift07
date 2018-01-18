@@ -3,75 +3,73 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using NackademinUppgift07.DataModels;
-using NackademinUppgift07.Models;
 using NackademinUppgift07.Models.Services;
-using Newtonsoft.Json;
 
 namespace NackademinUppgift07.Controllers
 {
-    public partial class TomasosController : Controller
+    public class TomasosController : Controller
     {
 
-	    protected readonly TomasosContext context;
-	    protected readonly UserManager<ApplicationUser> userManager;
-	    protected readonly SignInManager<ApplicationUser> signInManager;
-	    protected readonly ICartManager cartManager;
+	    private readonly TomasosContext dbContext;
+	    private readonly UserManager<ApplicationUser> userManager;
+	    private readonly ICartManager cartManager;
 
 		public TomasosController(
-		    TomasosContext context,
+		    TomasosContext dbContext,
 		    UserManager<ApplicationUser> userManager,
-		    SignInManager<ApplicationUser> signInManager,
 			ICartManager cartManager)
 	    {
-		    this.context = context;
+		    this.dbContext = dbContext;
 		    this.userManager = userManager;
-		    this.signInManager = signInManager;
 		    this.cartManager = cartManager;
 	    }
 
 	    #region Actions
-	    public async Task<IActionResult> Index(string beskrivning)
+	    public async Task<IActionResult> Index()
 	    {
 		    ViewData["Title"] = "Alla maträtter";
 
-			// Initial query
-		    IIncludableQueryable<Matratt, Produkt> matratts = context.Matratt
+		    List<Matratt> matratts = await dbContext.Matratt
 			    .Include(m => m.MatrattTypNavigation)
-			    .Include(m => m.MatrattProdukt).ThenInclude(m => m.Produkt);
+			    .Include(m => m.MatrattProdukt).ThenInclude(m => m.Produkt).ToListAsync();
 
-			// All items
+		    return View(matratts);
+	    }
+
+	    public async Task<IActionResult> Category(string beskrivning)
+	    {
 		    if (string.IsNullOrEmpty(beskrivning))
-			    return View(await matratts.ToListAsync());
+			    return RedirectToAction("Index");
 
-			// Try filter
-			MatrattTyp typ = await context.MatrattTyp
+		    // Try filter
+		    MatrattTyp typ = await dbContext.MatrattTyp
 			    .FirstOrDefaultAsync(m =>
 				    m.Beskrivning.IndexOf(beskrivning, StringComparison.CurrentCultureIgnoreCase) != -1);
 
-			// Invalid filter?
+		    // Invalid filter?
 		    if (typ == null)
-			    return RedirectToAction("Index", new
-			    {
-				    beskrivning = string.Empty,
-			    });
+			    return RedirectToAction("Index");
 
-			// Filtered items
+			// Filter items
 		    ViewData["Title"] = typ.Beskrivning;
-		    return View(await matratts
-				.Where(m => typ == null || m.MatrattTyp == typ.MatrattTyp1)
-			    .ToListAsync());
-	    }
+
+		    List<Matratt> matratts = await dbContext.Matratt
+			    .Include(m => m.MatrattTypNavigation)
+			    .Include(m => m.MatrattProdukt).ThenInclude(m => m.Produkt)
+			    .Where(m => typ == null || m.MatrattTyp == typ.MatrattTyp1)
+			    .ToListAsync();
+
+		    return View("Index", matratts);
+		}
 
 	    public async Task<IActionResult> AddToCart(int id, string source)
 	    {
-		    Matratt maträtt = await context.Matratt
+		    Matratt maträtt = await dbContext.Matratt
 				.SingleOrDefaultAsync(m => m.MatrattId == id);
 
 			if (maträtt != null)
@@ -83,21 +81,21 @@ namespace NackademinUppgift07.Controllers
 		    });
 	    }
 
-	    public async Task<IActionResult> RemoveFromCart(int id)
-	    {
+		public IActionResult RemoveFromCart(int id)
+		{
 			cartManager.RemoveFromCart(id);
 
 			return RedirectToAction("ViewCart");
-	    }
+		}
 
-	    public async Task<IActionResult> ClearCart()
-	    {
+		public IActionResult ClearCart()
+		{
 			cartManager.ClearCart();
 
-		    return RedirectToAction("ViewCart");
-	    }
+			return RedirectToAction("ViewCart");
+		}
 
-	    public async Task<IActionResult> ViewCart()
+		public async Task<IActionResult> ViewCart()
 	    {
 			return View(await cartManager.GetBestallningAsync());
 		}
@@ -107,7 +105,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
-		    Bestallning cartInQuestion = await context.Bestallning
+		    Bestallning cartInQuestion = await dbContext.Bestallning
 			    .Include(b => b.Kund)
 			    .Include(b => b.BestallningMatratt).ThenInclude(bm => bm.Matratt).ThenInclude(m => m.MatrattTypNavigation)
 			    .Include(b => b.BestallningMatratt).ThenInclude(bm => bm.Matratt).ThenInclude(m => m.MatrattProdukt)
@@ -131,8 +129,8 @@ namespace NackademinUppgift07.Controllers
 		    Bestallning cart = await cartManager.GetBestallningAsync();
 		    cart.Kund = user;
 
-		    context.Bestallning.Add(cart);
-		    await context.SaveChangesAsync();
+		    dbContext.Bestallning.Add(cart);
+		    await dbContext.SaveChangesAsync();
 
 			// Reset cart
 			cartManager.ClearCart();
@@ -148,7 +146,7 @@ namespace NackademinUppgift07.Controllers
 	    {
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
-			ApplicationUser filledUser = await context.Users
+			ApplicationUser filledUser = await dbContext.Users
 				.Include(k => k.Bestallning)
 					.ThenInclude(b => b.BestallningMatratt)
 					.ThenInclude(bm => bm.Matratt)

@@ -26,25 +26,25 @@
 </header>
 <nav>
 	<ul>
-		<li><a asp-action="Index" asp-route-beskrivning="">Alla</a></li>
+		<li><a asp-controller="Tomasos" asp-action="Index" asp-route-beskrivning="">Alla</a></li>
 		@foreach (MatrattTyp type in matrattTypes)
 		{
-			<li><a asp-action="Index" asp-route-beskrivning="@type.Beskrivning">@type.Beskrivning</a></li>
+			<li><a asp-controller="Tomasos" asp-action="Category" asp-route-beskrivning="@type.Beskrivning">@type.Beskrivning</a></li>
 		}
 	</ul>
 	<ul>
 	@if (User.Identity.IsAuthenticated)
 	{
-		<li><a asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
-		<li><a asp-action="Account">Min profil</a></li>
-		<li><a asp-action="ListOrders">Mina beställningar</a></li>
-		<li><a asp-action="Logout">Logga ut</a></li>
+		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
+		<li><a asp-controller="Auth" asp-action="Index">Min profil</a></li>
+		<li><a asp-controller="Tomasos" asp-action="ListOrders">Mina beställningar</a></li>
+		<li><a asp-controller="Auth" asp-action="Logout">Logga ut</a></li>
 	}
 	else
 	{
-		<li><a asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
-		<li><a asp-action="Login">Logga in</a></li>
-		<li><a asp-action="Register">Registrera ny kund</a></li>
+		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
+		<li><a asp-controller="Auth" asp-action="Login">Logga in</a></li>
+		<li><a asp-controller="Auth" asp-action="Register">Registrera ny kund</a></li>
 	}
 	</ul>
 </nav>
