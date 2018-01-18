@@ -19,8 +19,6 @@ namespace NackademinUppgift07.Controllers
 		[Authorize]
 		public async Task<IActionResult> Account()
 		{
-			await Initialize();
-
 			ApplicationUser currentUser = await userManager.GetUserAsync(User);
 
 			return View(new UserRegisterModel(currentUser));
@@ -31,8 +29,6 @@ namespace NackademinUppgift07.Controllers
 		[Authorize]
 	    public async Task<IActionResult> Account(UserRegisterModel model)
 		{
-			await Initialize();
-
 			// Ignore properties
 			ModelState.Remove(nameof(model.UserName));
 			ModelState.Remove(nameof(model.Password));
@@ -54,8 +50,6 @@ namespace NackademinUppgift07.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Login()
 		{
-			await Initialize();
-
 			if (signInManager.IsSignedIn(User))
 				return RedirectToAction("Account");
 
@@ -66,8 +60,6 @@ namespace NackademinUppgift07.Controllers
 		[AutoValidateAntiforgeryToken]
 	    public async Task<IActionResult> Login(ViewLogin login)
 		{
-			await Initialize();
-
 			if (signInManager.IsSignedIn(User))
 				return RedirectToAction("Account");
 
@@ -88,8 +80,6 @@ namespace NackademinUppgift07.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Register()
 		{
-			await Initialize();
-
 			if (signInManager.IsSignedIn(User))
 				return RedirectToAction("Account");
 
@@ -100,8 +90,6 @@ namespace NackademinUppgift07.Controllers
 	    [AutoValidateAntiforgeryToken]
 	    public async Task<IActionResult> Register(UserRegisterModel register)
 		{
-			await Initialize();
-
 		    if (signInManager.IsSignedIn(User))
 			    return RedirectToAction("Account");
 

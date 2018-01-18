@@ -36,16 +36,9 @@ namespace NackademinUppgift07.Controllers
 		    this.cartManager = cartManager;
 	    }
 
-		protected async Task Initialize()
-		{
-		    ViewBag.MaträttTypes = await context.MatrattTyp.ToListAsync();
-	    }
-
 	    #region Actions
 	    public async Task<IActionResult> Index(string beskrivning)
 	    {
-		    await Initialize();
-
 		    ViewData["Title"] = "Alla maträtter";
 
 			// Initial query
@@ -78,8 +71,6 @@ namespace NackademinUppgift07.Controllers
 
 	    public async Task<IActionResult> AddToCart(int id, string source)
 	    {
-		    await Initialize();
-
 		    Matratt maträtt = await context.Matratt
 				.SingleOrDefaultAsync(m => m.MatrattId == id);
 
@@ -94,8 +85,6 @@ namespace NackademinUppgift07.Controllers
 
 	    public async Task<IActionResult> RemoveFromCart(int id)
 	    {
-		    await Initialize();
-
 			cartManager.RemoveFromCart(id);
 
 			return RedirectToAction("ViewCart");
@@ -103,8 +92,6 @@ namespace NackademinUppgift07.Controllers
 
 	    public async Task<IActionResult> ClearCart()
 	    {
-		    await Initialize();
-
 			cartManager.ClearCart();
 
 		    return RedirectToAction("ViewCart");
@@ -112,16 +99,12 @@ namespace NackademinUppgift07.Controllers
 
 	    public async Task<IActionResult> ViewCart()
 	    {
-			await Initialize();
-
 			return View(await cartManager.GetBestallningAsync());
 		}
 
 		[Authorize]
 	    public async Task<IActionResult> ViewOrder(int id)
 	    {
-		    await Initialize();
-
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
 		    Bestallning cartInQuestion = await context.Bestallning
@@ -140,8 +123,6 @@ namespace NackademinUppgift07.Controllers
 		[Authorize]
 	    public async Task<IActionResult> OrderCart()
 	    {
-		    await Initialize();
-
 		    if (cartManager.SavedCart.TotalCount == 0)
 			    return RedirectToAction("ViewCart");
 
@@ -165,8 +146,6 @@ namespace NackademinUppgift07.Controllers
 		[Authorize]
 	    public async Task<IActionResult> ListOrders()
 	    {
-		    await Initialize();
-
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
 			ApplicationUser filledUser = await context.Users

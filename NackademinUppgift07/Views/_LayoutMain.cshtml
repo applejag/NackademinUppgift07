@@ -1,6 +1,8 @@
 ﻿@inject ICartManager cartManager
+@inject MatrattTypRepository matrattTypRepository
+
 @{
-	List<MatrattTyp> matrattTypes = ViewBag.MaträttTypes;
+	List<MatrattTyp> matrattTypes = await matrattTypRepository.GetMatrattTypesAsync();
 	int cartCount = cartManager.SavedCart.TotalCount;
 }
 

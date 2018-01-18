@@ -28,33 +28,34 @@ namespace NackademinUppgift07
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-	        services.AddMvc();
+	    public void ConfigureServices(IServiceCollection services)
+	    {
+		    services.AddMvc();
 
-	        services.AddDbContext<TomasosContext>(options =>
-		        options.UseSqlServer(Configuration.GetConnectionString("Tomasos")));
+		    services.AddDbContext<TomasosContext>(options =>
+			    options.UseSqlServer(Configuration.GetConnectionString("Tomasos")));
 
-	        services.AddSession();
-	        services.AddDistributedMemoryCache();
+		    services.AddSession();
+		    services.AddDistributedMemoryCache();
 
-	        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-		        {
-					// Weaken the password validator
-			        options.Password.RequireDigit = false;
-			        options.Password.RequireNonAlphanumeric = false;
-			        options.Password.RequireUppercase = false;
-			        options.Password.RequireLowercase = false;
-			        options.Password.RequiredLength =
-				        AttributesUtilities.Presets.GetMinLength<ViewLogin>(nameof(ViewLogin.Losenord)) ?? 6;
-		        })
-				.AddEntityFrameworkStores<TomasosContext>()
-		        .AddDefaultTokenProviders();
+		    services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+			    {
+				    // Weaken the password validator
+				    options.Password.RequireDigit = false;
+				    options.Password.RequireNonAlphanumeric = false;
+				    options.Password.RequireUppercase = false;
+				    options.Password.RequireLowercase = false;
+				    options.Password.RequiredLength =
+					    AttributesUtilities.Presets.GetMinLength<ViewLogin>(nameof(ViewLogin.Losenord)) ?? 6;
+			    })
+			    .AddEntityFrameworkStores<TomasosContext>()
+			    .AddDefaultTokenProviders();
 
-	        services.AddTransient<ICartManager, CartManager>();
-        }
+		    services.AddTransient<ICartManager, CartManager>();
+		    services.AddTransient<MatrattTypRepository>();
+	    }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+	    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
