@@ -9,14 +9,14 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NackademinUppgift07.Controllers
 {
-    public class AuthController : Controller
+    public class AccountController : Controller
     {
 
 	    private readonly UserManager<ApplicationUser> userManager;
 	    private readonly SignInManager<ApplicationUser> signInManager;
 	    private readonly TomasosContext dbContext;
 
-	    public AuthController(
+	    public AccountController(
 			TomasosContext dbContext,
 		    UserManager<ApplicationUser> userManager,
 		    SignInManager<ApplicationUser> signInManager)
