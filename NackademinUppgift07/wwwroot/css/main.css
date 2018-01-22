@@ -7,7 +7,7 @@ body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	background-color: azure;
 	margin: 0;
-	background: url("/images/pizza-bg.jpg") repeat center;
+	background: url("/images/pizza-bg.jpg") repeat top;
 }
 
 a {
