@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Models;
+using NackademinUppgift07.Utility;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace NackademinUppgift07.Controllers
@@ -124,6 +125,7 @@ namespace NackademinUppgift07.Controllers
 				return View(register);
 			}
 
+			await userManager.AddToRoleAsync(user, UserRole.RegularUser);
 			await signInManager.SignOutAsync();
 			await signInManager.SignInAsync(user, false);
 
