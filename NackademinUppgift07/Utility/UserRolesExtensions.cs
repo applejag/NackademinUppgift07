@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,11 @@ namespace NackademinUppgift07.Utility
 {
 	public static class UserRolesExtensions
 	{
+		public static bool IsInRole<TEnum>(this ClaimsPrincipal user, TEnum role)
+		{
+			return user.IsInRole(role.ToString());
+		}
+
 		public static async Task<bool> IsInRoleAsync<TUser, TEnum>(this UserManager<TUser> userManager, TUser user, TEnum role)
 			where TUser : IdentityUser
 		{
