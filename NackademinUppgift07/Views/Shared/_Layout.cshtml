@@ -1,9 +1,9 @@
 ﻿@inject ICartManager cartManager
-@inject MatrattTypRepository matrattTypRepository
+@inject MatrattRepository MatrattRepository
 @inject SignInManager<ApplicationUser> signInManager
 
 @{
-	List<MatrattTyp> matrattTypes = await matrattTypRepository.GetMatrattTypesAsync();
+	List<MatrattTyp> matrattTypes = await MatrattRepository.GetMatrattTypesAsync();
 	int cartCount = cartManager.SavedCart.TotalCount;
 }
 
@@ -68,6 +68,7 @@
 
 <environment names="Development">
 	<script src="~/lib/jquery/dist/jquery.js"></script>
+	<script src="~/lib/popper.js/dist/umd/popper.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 </environment>
 <environment names="Staging,Production">
@@ -75,6 +76,9 @@
 	        asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
 	        asp-fallback-test="window.jQuery">
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+			crossorigin="anonymous"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
 	        asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
 	        asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">

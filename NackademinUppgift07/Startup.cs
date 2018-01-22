@@ -52,7 +52,7 @@ namespace NackademinUppgift07
 			    .AddDefaultTokenProviders();
 
 		    services.AddTransient<ICartManager, CartManager>();
-		    services.AddTransient<MatrattTypRepository>();
+		    services.AddTransient<MatrattRepository>();
 	    }
 
 	    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,7 +82,6 @@ namespace NackademinUppgift07
 			});
 
 	        roleManager.EnsureAllRolesExists<IdentityRole, UserRole>().Wait();
-	        userManager.EnsureAllUsersInRoleAsync(UserRole.RegularUser).Wait();
         }
     }
 }

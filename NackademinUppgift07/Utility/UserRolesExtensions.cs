@@ -70,12 +70,3 @@ namespace NackademinUppgift07.Utility
 		}
 	}
 }
-namespace Microsoft.AspNetCore.Authorization { 
-	public class AuthorizeRolesAttribute : AuthorizeAttribute
-	{
-		public AuthorizeRolesAttribute(params UserRole[] roles)
-		{
-			Roles = string.Join(",", roles.Select(r => r.ToString()));
-		}
-	}
-}

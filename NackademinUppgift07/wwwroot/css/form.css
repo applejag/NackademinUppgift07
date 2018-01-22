@@ -14,9 +14,9 @@ form label {
 	display: block;
 }
 
-form input, button, .button {
+form input, button, .button, select {
 	width: 80%;
-	margin: 0 auto;
+	margin: 0 auto !important;
 	display: block;
 	padding: 0.5em;
 	border: 1px solid lightgray;
@@ -24,7 +24,7 @@ form input, button, .button {
 	border-radius: 0.5em;
 }
 
-form input:focus {
+form input:focus, form select:focus {
 	border-color: #666;
 	outline: none;
 }

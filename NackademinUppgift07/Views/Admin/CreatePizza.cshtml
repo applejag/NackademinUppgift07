@@ -1,0 +1,60 @@
+﻿@using NuGet.Frameworks
+@model ViewMatrattModel
+@inject MatrattRepository matrattRepository
+
+@{
+	ViewData["Title"] = "Ny maträtt";
+	Layout = "_LayoutAdmin";
+}
+
+@section Scripts
+{@Html.Partial("_ValidationScriptsPartial")}
+
+<form method="post">
+	<fieldset>
+		<legend>Skapa ny pizza</legend>
+
+		<p>
+			<span asp-validation-for="MatrattNamn"></span>
+			<label asp-for="MatrattNamn"></label>
+			<input asp-for="MatrattNamn" />
+		</p>
+		
+		<p>
+			<span asp-validation-for="MatrattTyp"></span>
+			<label asp-for="MatrattTyp"></label>
+			<select asp-for="MatrattTyp" asp-items="@Model.MatrattTypes">
+				<option disabled="disabled">Välj en kategori</option>
+			</select>
+		</p>
+
+		<p>
+			<span asp-validation-for="Beskrivning"></span>
+			<label asp-for="Beskrivning"></label>
+			<input asp-for="Beskrivning" />
+		</p>
+
+		<p>
+			<span asp-validation-for="Pris"></span>
+			<label asp-for="Pris"></label>
+			<input asp-for="Pris" />
+		</p>
+		
+		<p>
+			<span asp-validation-for="Produkts"></span>
+			<label asp-for="Produkts"></label>
+			<ul>
+				@for (var i=0; i<Model.Produkts.Count; i++)
+				{
+					@Html.HiddenFor(m => m.Produkts[i].Value)
+					@Html.CheckBoxFor(m => m.Produkts[i].Selected)
+					@Html.LabelFor(m => m.Produkts[i].Text, Model.Produkts[i].Text)
+				}
+			</ul>
+		</p>
+
+		<p>
+			<input type="submit" value="Spara" />
+		</p>
+	</fieldset>
+</form>
