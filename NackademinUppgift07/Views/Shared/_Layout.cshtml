@@ -14,9 +14,6 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>@ViewData["Title"] - Tomasos</title>
 
-	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 	<link asp-href-include="css/*.css" rel="stylesheet" />
 </head>
 <body>
@@ -36,20 +33,22 @@
 	@if (User.Identity.IsAuthenticated)
 	{
 		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
-		<li><a asp-controller="Auth" asp-action="Index">Min profil</a></li>
+		<li><a asp-controller="Account" asp-action="Index">Min profil</a></li>
 		<li><a asp-controller="Tomasos" asp-action="ListOrders">Mina beställningar</a></li>
-		<li><a asp-controller="Auth" asp-action="Logout">Logga ut</a></li>
+		<li><a asp-controller="Account" asp-action="Logout">Logga ut</a></li>
 	}
 	else
 	{
 		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
-		<li><a asp-controller="Auth" asp-action="Login">Logga in</a></li>
-		<li><a asp-controller="Auth" asp-action="Register">Registrera ny kund</a></li>
+		<li><a asp-controller="Account" asp-action="Login">Logga in</a></li>
+		<li><a asp-controller="Account" asp-action="Register">Registrera ny kund</a></li>
 	}
 	</ul>
 </nav>
 <article>
 	@RenderBody()
 </article>
+	
+@RenderSection("Scripts", required: false)
 </body>
 </html>

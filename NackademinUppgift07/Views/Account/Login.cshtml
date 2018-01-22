@@ -1,8 +1,10 @@
 ﻿@model ViewLogin
 @{
     ViewData["Title"] = "Logga in";
-    Layout = "~/Views/_LayoutMain.cshtml";
 }
+
+@section Scripts
+{@Html.Partial("_ValidationScriptsPartial")}
 
 <form asp-action="Login" method="post">
 	<fieldset>

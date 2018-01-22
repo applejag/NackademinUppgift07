@@ -2,8 +2,10 @@
 
 @{
     ViewData["Title"] = "Konto";
-    Layout = "~/Views/_LayoutMain.cshtml";
 }
+
+@section Scripts
+{@Html.Partial("_ValidationScriptsPartial")}
 
 <form asp-action="Index" method="post">
 	<fieldset>

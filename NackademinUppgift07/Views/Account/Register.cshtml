@@ -2,8 +2,10 @@
 
 @{
     ViewData["Title"] = "Ny användare";
-    Layout = "~/Views/_LayoutMain.cshtml";
 }
+
+@section Scripts
+{@Html.Partial("_ValidationScriptsPartial")}
 
 <form asp-action="Register" method="post">
 	<fieldset>
