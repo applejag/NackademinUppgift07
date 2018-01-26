@@ -6,11 +6,11 @@ fieldset legend {
 form p > span, .form-error {
 	color: red;
 	display: block;
-	padding: 0 10%;
+	margin: 0 10%;
 }
 
 form label {
-	padding: 0 10%;
+	margin: 0 10%;
 	display: block;
 }
 
@@ -50,4 +50,24 @@ form input:disabled, button:disabled, .button:disabled, .button.disabled {
 	border-bottom: 3px solid gray;
 	color: gray;
 	cursor: not-allowed;
+}
+
+/*  */
+
+form ul {
+	margin: 0 10%;
+	width: 80%;
+	list-style: none;
+}
+
+form .oneline input {
+	display: initial;
+	width: auto;
+	margin: 0;
+	padding: 0 1em;
+}
+
+form .oneline label {
+	display: initial;
+	margin: 0 1em;
 }

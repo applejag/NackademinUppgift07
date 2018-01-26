@@ -18,7 +18,7 @@ namespace NackademinUppgift07.ViewModels
 		public string Beskrivning { get; set; }
 
 		[Required(ErrorMessage = "Var god ange maträttens pris.")]
-		[Range(0, int.MaxValue, ErrorMessage = "Var god ange ett giltigt pris.")]
+		[Range(1, int.MaxValue, ErrorMessage = "Var god ange ett positivt pris.")]
 		public int Pris { get; set; }
 
 		[Required(ErrorMessage = "Var god ange maträttens kategori.")]

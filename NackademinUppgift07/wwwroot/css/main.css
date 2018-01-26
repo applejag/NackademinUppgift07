@@ -118,3 +118,8 @@ nav > ul > li > a:hover {
 	color: blue;
 	border-bottom: none;
 }
+
+.big {
+	font-size: x-large;
+	font-weight: 600;
+}
