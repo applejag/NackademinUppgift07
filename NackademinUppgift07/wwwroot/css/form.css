@@ -52,7 +52,7 @@ form input:disabled, button:disabled, .button:disabled, .button.disabled {
 	cursor: not-allowed;
 }
 
-/*  */
+/* ---------------- */
 
 form ul {
 	margin: 0 10%;

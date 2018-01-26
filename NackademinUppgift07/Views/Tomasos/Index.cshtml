@@ -22,6 +22,14 @@ else
 					<div class="mat-price">@mat.Pris.ToString("C")</div>
 					<div class="mat-add">
 						<a asp-action="AddToCart" asp-route-id="@mat.MatrattId" asp-route-source="@ViewData["Title"]">Lägg till i kundvagn</a>
+						@if (User.IsInRole(UserRole.Admin))
+						{
+
+							<br/>
+							<a asp-controller="Admin" asp-action="AlterPizza" asp-route-id="@mat.MatrattId">Ändra maträtt</a>
+							<br/>
+							<a asp-controller="Admin" asp-action="RemovePizza" asp-route-id="@mat.MatrattId">Ta bort</a> 
+						}
 					</div>
 				</div>
 			</div>

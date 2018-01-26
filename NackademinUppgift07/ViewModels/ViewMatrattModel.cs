@@ -7,6 +7,8 @@ namespace NackademinUppgift07.ViewModels
 {
 	public class ViewMatrattModel
 	{
+		public int? MatrattId { get; set; }
+
 		[Required(ErrorMessage = "Var god ange maträttens namn.")]
 		[MaxLength(50, ErrorMessage = "Namnet får max vara 50 karaktärer.")]
 		[Display(Name = "Namn")]

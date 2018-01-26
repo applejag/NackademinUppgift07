@@ -1,9 +1,9 @@
-﻿@using NuGet.Frameworks
+﻿@using System.Globalization
+@using NuGet.Frameworks
 @model ViewMatrattModel
 @inject MatrattRepository matrattRepository
 
 @{
-	ViewData["Title"] = "Ny maträtt";
 	Layout = "_LayoutAdmin";
 }
 
@@ -11,15 +11,16 @@
 {@Html.Partial("_ValidationScriptsPartial")}
 
 <form method="post">
+	<input type="hidden" asp-for="MatrattId"/>
 	<fieldset>
-		<legend>Skapa ny pizza</legend>
+		<legend>@ViewData["Legend"]</legend>
 
 		<p>
 			<span asp-validation-for="MatrattNamn"></span>
 			<label asp-for="MatrattNamn"></label>
-			<input asp-for="MatrattNamn" />
+			<input asp-for="MatrattNamn"/>
 		</p>
-		
+
 		<p>
 			<span asp-validation-for="MatrattTyp"></span>
 			<label asp-for="MatrattTyp"></label>
@@ -31,15 +32,15 @@
 		<p>
 			<span asp-validation-for="Beskrivning"></span>
 			<label asp-for="Beskrivning"></label>
-			<input asp-for="Beskrivning" />
+			<input asp-for="Beskrivning"/>
 		</p>
 
 		<p>
 			<span asp-validation-for="Pris"></span>
 			<label asp-for="Pris"></label>
-			<input asp-for="Pris" />
+			<input asp-for="Pris"/>
 		</p>
-		
+
 		<p>
 			<span asp-validation-for="Produkts"></span>
 			<label asp-for="Produkts" class="big"></label>
@@ -56,7 +57,7 @@
 		</p>
 
 		<p>
-			<input type="submit" value="Spara" />
+			<input type="submit" value="Spara"/>
 		</p>
 	</fieldset>
 </form>
