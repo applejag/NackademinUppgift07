@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NackademinUppgift07.DataModels;
 using NackademinUppgift07.Utility;
@@ -17,7 +18,7 @@ namespace NackademinUppgift07.Models.Services
 		void ClearCart();
 
 		void SetBestallning(Bestallning bestallning);
-		Task<Bestallning> GetBestallningAsync();
+		Task<Bestallning> GetBestallningAsync(bool kundPremium, int kundPoints);
 	}
 
 	public class CartManager : ICartManager
@@ -30,7 +31,8 @@ namespace NackademinUppgift07.Models.Services
 		protected readonly HttpContext httpContext;
 		protected readonly TomasosContext dbContext;
 
-		public CartManager(IHttpContextAccessor contextAccessor, TomasosContext dbContext)
+		public CartManager(IHttpContextAccessor contextAccessor,
+			TomasosContext dbContext)
 		{
 			httpContext = contextAccessor.HttpContext;
 			this.dbContext = dbContext;
@@ -45,7 +47,7 @@ namespace NackademinUppgift07.Models.Services
 				.ToArray();
 		}
 
-		public async Task<Bestallning> GetBestallningAsync()
+		public async Task<Bestallning> GetBestallningAsync(bool kundPremium, int kundPoints)
 		{
 			if (cart.orders == null)
 				return new Bestallning();
@@ -69,9 +71,10 @@ namespace NackademinUppgift07.Models.Services
 				Levererad = false,
 				BestallningDatum = DateTime.Now,
 			};
-
-			bestallning.Totalbelopp = bestallning.BestallningMatratt
-				.Sum(bm => bm.Antal * bm.Matratt.Pris);
+			
+			bestallning.CalculateTotalPrice(
+				kundPremium: kundPremium,
+				kundPoints: kundPoints);
 
 			return bestallning;
 		}

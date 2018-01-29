@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using NackademinUppgift07.Models;
+using NackademinUppgift07.Utility;
 
 namespace NackademinUppgift07.DataModels
 {
     public partial class Bestallning
     {
+		public const int POINTS_FOR_FREE_FOOD = 100;
+	    public const int POINTS_FOR_PIZZA_ORDER = 10;
+	    public const decimal PREMIUM_DISCOUNT = 0.2m;
+
         public Bestallning()
         {
             BestallningMatratt = new HashSet<BestallningMatratt>();
@@ -14,7 +22,10 @@ namespace NackademinUppgift07.DataModels
 
         public int BestallningId { get; set; }
         public DateTime BestallningDatum { get; set; }
-        public int Totalbelopp { get; set; }
+        public decimal Totalbelopp { get; set; }
+		public int OrdinalBelopp { get; set; }
+		public int GratisPizzaPris { get; set; }
+		public decimal Rabatt { get; set; }
         public bool Levererad { get; set; }
         public string KundId { get; set; }
 
@@ -23,5 +34,23 @@ namespace NackademinUppgift07.DataModels
 
 		[NotMapped]
 	    public int TotalCount => BestallningMatratt?.Sum(bm => bm.Antal) ?? 0;
+
+	    public void CalculateTotalPrice(bool kundPremium, int kundPoints)
+	    {
+			if (BestallningMatratt == null)
+				throw new ArgumentNullException(nameof(BestallningMatratt));
+			if (BestallningMatratt.Any(bm => bm.Matratt == null))
+				throw new ArgumentNullException(nameof(BestallningMatratt), "Matratt in BestallningMatratt is null");
+			
+		    OrdinalBelopp = BestallningMatratt.Sum(bm => bm.Antal * bm.Matratt.Pris);
+
+		    GratisPizzaPris = kundPoints + TotalCount * POINTS_FOR_PIZZA_ORDER >= POINTS_FOR_FREE_FOOD
+				? BestallningMatratt.Min(bm => bm.Matratt.Pris)
+				: 0;
+
+		    Rabatt = kundPremium ? PREMIUM_DISCOUNT : 0;
+
+		    Totalbelopp = OrdinalBelopp * (1m - Rabatt) - GratisPizzaPris;
+	    }
     }
 }

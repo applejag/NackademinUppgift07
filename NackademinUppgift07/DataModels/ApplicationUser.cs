@@ -5,6 +5,7 @@ namespace NackademinUppgift07.DataModels
 {
 	public class ApplicationUser : IdentityUser
 	{
+
 		public ApplicationUser(string username)
 			: base(username)
 		{
@@ -19,6 +20,7 @@ namespace NackademinUppgift07.DataModels
 		public string Address { get; set; }
 		public string PostalCode { get; set; }
 		public string City { get; set; }
+		public int Points { get; set; }
 
 		public ICollection<Bestallning> Bestallning { get; set; }
 

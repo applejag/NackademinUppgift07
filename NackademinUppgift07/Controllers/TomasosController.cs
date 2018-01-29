@@ -8,12 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using NackademinUppgift07.DataModels;
+using NackademinUppgift07.Models;
 using NackademinUppgift07.Models.Services;
+using NackademinUppgift07.Utility;
 
 namespace NackademinUppgift07.Controllers
 {
     public class TomasosController : Controller
     {
+
+	    public bool UserIsPremium => User.IsInRole(UserRole.PremiumUser) || User.IsInRole(UserRole.Admin);
 
 	    private readonly TomasosContext dbContext;
 	    private readonly UserManager<ApplicationUser> userManager;
@@ -97,7 +101,11 @@ namespace NackademinUppgift07.Controllers
 
 		public async Task<IActionResult> ViewCart()
 	    {
-			return View(await cartManager.GetBestallningAsync());
+		    ApplicationUser user = await userManager.GetUserAsync(User);
+
+			return View(await cartManager.GetBestallningAsync(
+				kundPremium: UserIsPremium,
+				kundPoints: user?.Points ?? 0));
 		}
 
 		[Authorize]
@@ -126,9 +134,12 @@ namespace NackademinUppgift07.Controllers
 
 		    ApplicationUser user = await userManager.GetUserAsync(User);
 
-		    Bestallning cart = await cartManager.GetBestallningAsync();
-		    cart.Kund = user;
+		    Bestallning cart = await cartManager.GetBestallningAsync(
+				kundPremium: UserIsPremium,
+				kundPoints: user.Points);
 
+		    cart.Kund = user;
+		    user.Points += cart.TotalCount * Bestallning.POINTS_FOR_PIZZA_ORDER;
 		    dbContext.Bestallning.Add(cart);
 		    await dbContext.SaveChangesAsync();
 

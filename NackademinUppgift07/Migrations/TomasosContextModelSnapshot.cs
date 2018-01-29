@@ -128,7 +128,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.ApplicationUser", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -165,6 +165,8 @@ namespace NackademinUppgift07.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed");
 
+                    b.Property<int>("Points");
+
                     b.Property<string>("PostalCode");
 
                     b.Property<string>("SecurityStamp");
@@ -187,7 +189,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.Bestallning", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.Bestallning", b =>
                 {
                     b.Property<int>("BestallningId")
                         .ValueGeneratedOnAdd()
@@ -196,12 +198,18 @@ namespace NackademinUppgift07.Migrations
                     b.Property<DateTime>("BestallningDatum")
                         .HasColumnType("datetime");
 
+                    b.Property<int>("GratisPizzaPris");
+
                     b.Property<string>("KundId")
                         .HasColumnName("KundID");
 
                     b.Property<bool>("Levererad");
 
-                    b.Property<int>("Totalbelopp");
+                    b.Property<int>("OrdinalBelopp");
+
+                    b.Property<decimal>("Rabatt");
+
+                    b.Property<decimal>("Totalbelopp");
 
                     b.HasKey("BestallningId");
 
@@ -210,7 +218,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("Bestallning");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.BestallningMatratt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.BestallningMatratt", b =>
                 {
                     b.Property<int>("MatrattId")
                         .HasColumnName("MatrattID");
@@ -229,7 +237,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("BestallningMatratt");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.Matratt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.Matratt", b =>
                 {
                     b.Property<int>("MatrattId")
                         .ValueGeneratedOnAdd()
@@ -255,7 +263,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("Matratt");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.MatrattProdukt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.MatrattProdukt", b =>
                 {
                     b.Property<int>("MatrattId")
                         .HasColumnName("MatrattID");
@@ -270,7 +278,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("MatrattProdukt");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.MatrattTyp", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.MatrattTyp", b =>
                 {
                     b.Property<int>("MatrattTyp1")
                         .ValueGeneratedOnAdd()
@@ -286,7 +294,7 @@ namespace NackademinUppgift07.Migrations
                     b.ToTable("MatrattTyp");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.Produkt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.Produkt", b =>
                 {
                     b.Property<int>("ProduktId")
                         .ValueGeneratedOnAdd()
@@ -312,7 +320,7 @@ namespace NackademinUppgift07.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.ApplicationUser")
+                    b.HasOne("NackademinUppgift07.DataModels.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -320,7 +328,7 @@ namespace NackademinUppgift07.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.ApplicationUser")
+                    b.HasOne("NackademinUppgift07.DataModels.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -333,7 +341,7 @@ namespace NackademinUppgift07.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NackademinUppgift07.Models.ApplicationUser")
+                    b.HasOne("NackademinUppgift07.DataModels.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -341,49 +349,49 @@ namespace NackademinUppgift07.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.ApplicationUser")
+                    b.HasOne("NackademinUppgift07.DataModels.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.Bestallning", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.Bestallning", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.ApplicationUser", "Kund")
+                    b.HasOne("NackademinUppgift07.DataModels.ApplicationUser", "Kund")
                         .WithMany("Bestallning")
                         .HasForeignKey("KundId")
                         .HasConstraintName("FK_Bestallning_Kund");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.BestallningMatratt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.BestallningMatratt", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.Bestallning", "Bestallning")
+                    b.HasOne("NackademinUppgift07.DataModels.Bestallning", "Bestallning")
                         .WithMany("BestallningMatratt")
                         .HasForeignKey("BestallningId")
                         .HasConstraintName("FK_BestallningMatratt_Bestallning");
 
-                    b.HasOne("NackademinUppgift07.Models.Matratt", "Matratt")
+                    b.HasOne("NackademinUppgift07.DataModels.Matratt", "Matratt")
                         .WithMany("BestallningMatratt")
                         .HasForeignKey("MatrattId")
                         .HasConstraintName("FK_BestallningMatratt_Matratt");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.Matratt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.Matratt", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.MatrattTyp", "MatrattTypNavigation")
+                    b.HasOne("NackademinUppgift07.DataModels.MatrattTyp", "MatrattTypNavigation")
                         .WithMany("Matratt")
                         .HasForeignKey("MatrattTyp")
                         .HasConstraintName("FK_Matratt_MatrattTyp");
                 });
 
-            modelBuilder.Entity("NackademinUppgift07.Models.MatrattProdukt", b =>
+            modelBuilder.Entity("NackademinUppgift07.DataModels.MatrattProdukt", b =>
                 {
-                    b.HasOne("NackademinUppgift07.Models.Matratt", "Matratt")
+                    b.HasOne("NackademinUppgift07.DataModels.Matratt", "Matratt")
                         .WithMany("MatrattProdukt")
                         .HasForeignKey("MatrattId")
                         .HasConstraintName("FK_MatrattProdukt_Matratt");
 
-                    b.HasOne("NackademinUppgift07.Models.Produkt", "Produkt")
+                    b.HasOne("NackademinUppgift07.DataModels.Produkt", "Produkt")
                         .WithMany("MatrattProdukt")
                         .HasForeignKey("ProduktId")
                         .HasConstraintName("FK_MatrattProdukt_Produkt");
