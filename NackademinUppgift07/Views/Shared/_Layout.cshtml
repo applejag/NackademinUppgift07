@@ -41,16 +41,15 @@
 		}
 	</ul>
 	<ul>
+		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (<span id="cartSize">@cartCount rätt@(cartCount == 1 ? "" : "er")</span>)</a></li>
 		@if (signInManager.IsSignedIn(User))
 		{
-			<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
 			<li><a asp-controller="Account" asp-action="Index">Min profil</a></li>
 			<li><a asp-controller="Tomasos" asp-action="ListOrders">Mina beställningar</a></li>
 			<li><a asp-controller="Account" asp-action="Logout">Logga ut</a></li>
 		}
 		else
 		{
-			<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (@cartCount rätt@(cartCount == 1 ? "" : "er"))</a></li>
 			<li><a asp-controller="Account" asp-action="Login">Logga in</a></li>
 			<li><a asp-controller="Account" asp-action="Register">Registrera ny kund</a></li>
 		}
@@ -81,13 +80,13 @@
 	@RenderBody()
 </article>
 	
-@RenderSection("Scripts", required: false)
 	
 
 <environment names="Development">
 	<script src="~/lib/jquery/dist/jquery.js"></script>
 	<script src="~/lib/popper.js/dist/umd/popper.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
 </environment>
 <environment names="Staging,Production">
 	<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
@@ -96,11 +95,14 @@
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
 	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-			crossorigin="anonymous"></script>
+	        crossorigin="anonymous"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
 	        asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
 	        asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
 	</script>
+	<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
 </environment>
+
+@RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -71,7 +71,9 @@ namespace NackademinUppgift07.Controllers
 		    return View("Index", matratts);
 		}
 
-	    public async Task<IActionResult> AddToCart(int id, string source)
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+	    public async Task<IActionResult> AddToCart(int id)
 	    {
 		    Matratt maträtt = await dbContext.Matratt
 				.SingleOrDefaultAsync(m => m.MatrattId == id);
@@ -79,9 +81,10 @@ namespace NackademinUppgift07.Controllers
 			if (maträtt != null)
 				cartManager.AddToCart(maträtt.MatrattId);
 
-			return RedirectToAction("Index", new
+		    return Json(new
 		    {
-			    beskrivning = source,
+			    success = maträtt != null,
+				cartSize = cartManager.SavedCart.TotalCount,
 		    });
 	    }
 

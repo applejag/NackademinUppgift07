@@ -1,7 +1,72 @@
 ﻿@model List<Matratt>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
 @{
 	//ViewData["Title"] = "Alla maträtter";
+}
+
+@functions
+{
+
+	public string GetAntiXsrfRequestToken()
+	{
+		return Xsrf.GetAndStoreTokens(Context).RequestToken;
+	}
+
+}
+
+@section Scripts {
+<script type="text/javascript">
+		$(function() {
+			$('.popover-button').popover();
+		});
+
+		function UpdateCartSize(size) {
+			
+		}
+
+		function AddToCartOnSuccess(elem, name, count) {
+			var plural = (count == 1 ? " rätt" : " rätter");
+
+			$(elem).popover('dispose');
+			$(elem).popover({
+				trigger: "focus",
+				content: "<strong>" + name + "</strong> har lagts till i din kundvagn.<br>Du har nu <span class='badge badge-light'>" + count + "</span>" + plural + " i din kundvagn.",
+				html: true
+			});
+			$(elem).popover('show');
+			$("#cartSize").text(count + plural);
+		}
+
+		function AddToCartOnFailure(elem, name) {
+			$(elem).popover({
+				trigger: "focus",
+				content: "Något gick fel vid försök att lägga till " + name + " i din kundvagn."
+			});
+		}
+
+		function AddToCartAjax(elem, id, name) {
+			$.ajax({
+				type: "post",
+				dataType: "json",
+				headers: {
+					"RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+				},
+				url: '@Url.Action("AddToCart", "Tomasos")?id=' + id,
+				success: function (result) {
+					console.log(result);
+					if (result.success)
+						AddToCartOnSuccess(elem, name, result.cartSize);
+					else
+						AddToCartOnFailure(elem, name);
+				},
+				error: function (err, scnd) {
+					console.error(err);
+					AddToCartOnFailure(elem, name);
+				}
+			});
+		}
+</script>
 }
 
 @if (Model.Count == 0)
@@ -21,7 +86,10 @@ else
 				<div class="mat-head-right">
 					<div class="mat-price">@mat.Pris.ToString("C")</div>
 					<div class="mat-add">
-						<a asp-action="AddToCart" asp-route-id="@mat.MatrattId" asp-route-source="@ViewData["Title"]">Lägg till i kundvagn</a>
+						<button type="button" class="btn btn-info btn-sm"
+						        data-trigger="manual"
+						        data-toggle="popover"
+								onclick="AddToCartAjax(this, @mat.MatrattId, '@mat.MatrattNamn')">Lägg till i kundvagn</button>
 						@if (User.IsInRole(UserRole.Admin))
 						{
 
