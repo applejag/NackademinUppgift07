@@ -12,6 +12,7 @@ namespace NackademinUppgift07.Utility
 {
 	public static class UserRolesExtensions
 	{
+
 		public static bool IsInRole<TEnum>(this ClaimsPrincipal user, TEnum role)
 		{
 			return user.IsInRole(role.ToString());
@@ -33,6 +34,18 @@ namespace NackademinUppgift07.Utility
 			params TEnum[] roles) where TUser : IdentityUser
 		{
 			return await userManager.AddToRolesAsync(user, roles.Select(r => r.ToString()));
+		}
+
+		public static async Task<IdentityResult> RemoveFromRoleAsync<TUser, TEnum>(this UserManager<TUser> userManager, TUser user, TEnum role)
+			where TUser : IdentityUser
+		{
+			return await userManager.RemoveFromRoleAsync(user, role.ToString());
+		}
+
+		public static async Task<IdentityResult> RemoveFromRolesAsync<TUser, TEnum>(this UserManager<TUser> userManager, TUser user,
+			params TEnum[] roles) where TUser : IdentityUser
+		{
+			return await userManager.RemoveFromRolesAsync(user, roles.Select(r => r.ToString()));
 		}
 
 		public static async Task<IdentityResult> EnsureAllUsersInRoleAsync<TUser, TEnum>(this UserManager<TUser> userManager, TEnum role)

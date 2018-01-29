@@ -1,0 +1,75 @@
+﻿@using Microsoft.EntityFrameworkCore
+@inject TomasosContext TomasosContext
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+	ViewData["Title"] = "Alla användare";
+	Layout = "_LayoutAdmin";
+	List<ApplicationUser> allUsers = await TomasosContext.Users.ToListAsync();
+}
+
+<section>
+	<table>
+		<thead>
+		<tr>
+			<th></th>
+			<th>Namn</th>
+			<th>Epost</th>
+			<th>Roll</th>
+			<th>Åtgärd</th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (ApplicationUser user in allUsers)
+		{
+			var role = UserRole.RegularUser;
+			if (await UserManager.IsInRoleAsync(user, UserRole.Admin))
+			{
+				role = UserRole.Admin;
+			}
+			else if (await UserManager.IsInRoleAsync(user, UserRole.PremiumUser))
+			{
+				role = UserRole.PremiumUser;
+			}
+
+			<tr>
+				<td><span class="badge badge-info">@user.UserName</span></td>
+				<td>@user.DisplayName</td>
+				<td>@user.Email</td>
+				<td>
+					@if (role == UserRole.Admin)
+					{
+						<span class="badge badge-success">Admin</span>
+					}
+					else if (role == UserRole.PremiumUser)
+					{
+						<span class="badge badge-primary">Premium</span>
+					}
+					else
+					{
+						<span class="badge badge-info">Regular</span>
+					}
+				</td>
+				<td>
+					@if (role == UserRole.Admin)
+					{
+						<i>(saknar behörighet)</i>
+					}
+					else
+					{
+						if (role == UserRole.PremiumUser)
+						{
+							<a asp-action="DemoteUser" asp-route-id="@user.Id">&dArr; Gör till @nameof(UserRole.RegularUser)</a>
+						}
+						else
+						{
+							<a asp-action="PromoteUser" asp-route-id="@user.Id">&uArr; Gör till @nameof(UserRole.PremiumUser)</a>
+						}
+						<br/><a asp-action="RemoveUser" asp-route-id="@user.Id">&times; Ta bort</a>
+					}
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+</section>

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,13 @@ namespace NackademinUppgift07.Controllers
 	public partial class AdminController : Controller
 	{
 		private readonly TomasosContext dbContext;
+		private readonly UserManager<ApplicationUser> userManager;
 
-		public AdminController(TomasosContext dbContext)
+		public AdminController(TomasosContext dbContext,
+			UserManager<ApplicationUser> userManager)
 		{
 			this.dbContext = dbContext;
+			this.userManager = userManager;
 		}
 
 		public IActionResult Index()

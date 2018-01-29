@@ -14,7 +14,7 @@ form label {
 	display: block;
 }
 
-form input, button, .button, select {
+form input, .button, select {
 	width: 80%;
 	margin: 0 auto !important;
 	display: block;
@@ -29,14 +29,14 @@ form input:focus, form select:focus {
 	outline: none;
 }
 
-form input[type="submit"], button, .button {
+form input[type="submit"], .button {
 	padding: 0.5em;
 	background-color: beige;
 	color: #666;
 	text-align: center;
 }
 
-form input[type="submit"]:hover, button:hover, .button:hover {
+form input[type="submit"]:hover, .button:hover {
 	color: #222;
 	background-color: beige;
 	
@@ -44,7 +44,7 @@ form input[type="submit"]:hover, button:hover, .button:hover {
 	border-bottom: 3px solid #666;
 }
 
-form input:disabled, button:disabled, .button:disabled, .button.disabled {
+form input:disabled, .button:disabled, .button.disabled {
 	background-color: lightgray;
 	border: 1px solid gray;
 	border-bottom: 3px solid gray;

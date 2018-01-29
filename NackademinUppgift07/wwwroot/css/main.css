@@ -123,3 +123,8 @@ nav > ul > li > a:hover {
 	font-size: x-large;
 	font-weight: 600;
 }
+
+.mono {
+	font-family: monospace;
+	
+}
