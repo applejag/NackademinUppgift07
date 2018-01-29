@@ -5,6 +5,7 @@
 @{
 	List<MatrattTyp> matrattTypes = await MatrattRepository.GetMatrattTypesAsync();
 	int cartCount = cartManager.SavedCart.TotalCount;
+	string message = ViewData["Message"] as string ?? TempData["Message"] as string;
 }
 
 <!DOCTYPE html>
@@ -66,6 +67,17 @@
 	}
 </nav>
 <article>
+	
+	@if (!string.IsNullOrEmpty(message))
+	{
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>@message</strong>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	}
+
 	@RenderBody()
 </article>
 	

@@ -4,7 +4,6 @@
 
 @{
 	ViewData["Title"] = "Alla användare";
-	Layout = "_LayoutAdmin";
 	List<ApplicationUser> allUsers = await TomasosContext.Users.ToListAsync();
 }
 

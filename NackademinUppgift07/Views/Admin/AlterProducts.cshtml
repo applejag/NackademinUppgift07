@@ -2,7 +2,6 @@
 @model Produkt
 @{
 	ViewData["Title"] = "Ändra ingredienser";
-	Layout = "_LayoutAdmin";
 	List<Produkt> allProducts = await MatrattRepository.GetProductsWithMatrattsAsync();
 }
 @section Scripts
