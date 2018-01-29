@@ -148,15 +148,36 @@ namespace NackademinUppgift07.Controllers
 			maträtt.Beskrivning = model.Beskrivning;
 			maträtt.Pris = model.Pris;
 			maträtt.MatrattTyp = model.MatrattTyp;
-			
-			maträtt.MatrattProdukt = await (from product in dbContext.Produkt
-				where model.Produkts.Any(p => p.Selected && p.Value == product.ProduktId.ToString())
-				select maträtt.MatrattProdukt.FirstOrDefault(mp => mp.ProduktId == product.ProduktId)
-				?? new MatrattProdukt
+
+			// Ensure right products listed
+			foreach (Produkt product in dbContext.Produkt)
+			{
+				// Is selected?
+				if (model.Produkts.Any(p => product.ProduktId.ToString() == p.Value && p.Selected))
 				{
-					Matratt = maträtt,
-					Produkt = product,
-				}).ToListAsync();
+					// Not already added?
+					if (maträtt.MatrattProdukt.All(mp => mp.ProduktId != product.ProduktId))
+					{
+						maträtt.MatrattProdukt.Add(new MatrattProdukt
+						{
+							Matratt = maträtt,
+							Produkt = product,
+						});
+					}
+				}
+				// Not selected.
+				else
+				{
+					// Remove if found
+					foreach (MatrattProdukt mp in maträtt.MatrattProdukt)
+					{
+						if (mp.ProduktId != product.ProduktId) continue;
+
+						maträtt.MatrattProdukt.Remove(mp);
+						break;
+					}
+				}
+			}
 
 			await dbContext.SaveChangesAsync();
 
@@ -184,23 +205,25 @@ namespace NackademinUppgift07.Controllers
 			return RedirectToAction("Index", "Tomasos");
 		}
 
-		private async Task FillMatrattModelAsync(ViewMatrattModel model, IReadOnlyList<int> selectedProdukts = null)
+		private async Task FillMatrattModelAsync(ViewMatrattModel model, IList<int> selectedProdukts = null)
 		{
+			// Add existing types
 			model.MatrattTypes = new SelectList(await dbContext.MatrattTyp.ToListAsync(),
 				dataValueField: nameof(MatrattTyp.MatrattTyp1),
 				dataTextField: nameof(MatrattTyp.Beskrivning),
 				selectedValue: model.MatrattTyp);
 			
-			// Not my proudest works
-			List<int> tmp = model.Produkts?
-				.Where(p => int.TryParse(p.Value, out int _))
-				.Select(p => int.Parse(p.Value))
-				.ToList()
-				?? new List<int>();
+			// Combine lists
+			selectedProdukts = selectedProdukts ?? new List<int>();
+			model.Produkts?.ForEach(item =>
+			{
+				if (item.Selected && int.TryParse(item.Value, out int id))
+				{
+					selectedProdukts.Add(id);
+				}
+			});
 
-			selectedProdukts = (selectedProdukts?.Union(tmp) ?? tmp)
-				.ToList();
-
+			// Add all products, with Selected property
 			model.Produkts = await dbContext.Produkt
 				.Select(produkt => new SelectListItem
 			{
