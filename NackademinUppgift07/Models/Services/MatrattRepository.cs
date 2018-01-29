@@ -25,6 +25,13 @@ namespace NackademinUppgift07.Models.Services
 			return await dbContext.Produkt.ToListAsync();
 		}
 
+		public async Task<List<Produkt>> GetProductsWithMatrattsAsync()
+		{
+			return await dbContext.Produkt
+				.Include(p => p.MatrattProdukt).ThenInclude(mp => mp.Matratt)
+				.ToListAsync();
+		}
+
 		public async Task<SelectList> GetProductSelectListAsync()
 		{
 			return new SelectList(await GetProductsAsync(), nameof(Produkt.ProduktId), nameof(Produkt.ProduktNamn));

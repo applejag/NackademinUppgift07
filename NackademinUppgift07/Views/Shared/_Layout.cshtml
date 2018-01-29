@@ -55,11 +55,12 @@
 		}
 	</ul>
 	
-	@if (User.IsInRole(UserRole.Admin))
+	@if (signInManager.IsSignedIn(User) && User.IsInRole(UserRole.Admin))
 	{
 	<ul>
 		<li><a asp-controller="Admin" asp-action="Index">Admin</a></li>
 		<li><a asp-controller="Admin" asp-action="CreatePizza">Ny maträtt</a></li>
+		<li><a asp-controller="Admin" asp-action="AlterProducts">Ändra ingredienser</a></li>
 	</ul>
 	}
 </nav>

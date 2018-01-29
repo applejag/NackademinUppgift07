@@ -1,0 +1,73 @@
+﻿@inject MatrattRepository MatrattRepository
+@model Produkt
+@{
+	ViewData["Title"] = "Ändra ingredienser";
+	Layout = "_LayoutAdmin";
+	List<Produkt> allProducts = await MatrattRepository.GetProductsWithMatrattsAsync();
+}
+@section Scripts
+{@Html.Partial("_ValidationScriptsPartial")}
+
+<section>
+	<form asp-action="AlterProducts" method="post">
+		<fieldset>
+			@if (Model == null || Model.ProduktId == 0)
+			{
+				<legend>Ny ingrediens</legend>
+			}
+			else
+			{
+				<legend>Ändra på @Model.ProduktNamn</legend>
+				<input asp-for="ProduktId" type="hidden"/>
+			}
+			
+			<p>
+				<span asp-validation-for="ProduktNamn"></span>
+				<label asp-for="ProduktNamn"></label>
+				<input asp-for="ProduktNamn"/>
+			</p>
+		
+			<p>
+				<input type="submit" value="Spara"/>
+			</p>
+		</fieldset>
+	</form>
+</section>
+
+<section>
+	<table>
+		<thead>
+		<tr>
+			<th colspan="2">Ingredienser</th>
+		</tr>
+		</thead>
+		<tbody>
+		@if (allProducts.Count == 0)
+		{
+			<tr>
+				<td colspan="2"><i>(Finns ännu inga ingredienser)</i></td>
+			</tr>
+		}
+		else
+		{
+			foreach (Produkt produkt in allProducts)
+			{
+				<tr>
+					<td>@produkt.ProduktNamn</td>
+					<td>
+						<a asp-action="AlterProducts" asp-route-id="@produkt.ProduktId">Ändra</a>
+						@if (produkt.MatrattProdukt.Count > 0)
+						{
+							<a class="disabled" title="Ingrediensen används i @string.Join(", ", produkt.MatrattProdukt.Select(mp => mp.Matratt.MatrattNamn))">Ta bort</a>
+						}
+						else
+						{
+							<a asp-action="RemoveProduct" asp-route-id="@produkt.ProduktId">Ta bort</a>
+						}
+					</td>
+				</tr>
+			}
+		}
+		</tbody>
+	</table>
+</section>
