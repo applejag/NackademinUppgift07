@@ -142,8 +142,11 @@ namespace NackademinUppgift07.Controllers
 				kundPoints: user.Points);
 
 		    cart.Kund = user;
-		    user.Points += cart.TotalCount * Bestallning.POINTS_FOR_PIZZA_ORDER;
+		    user.Points += cart.TotalCount * Bestallning.POINTS_PER_MATRATT;
 		    dbContext.Bestallning.Add(cart);
+		    if (cart.GratisPizzaPris > 0)
+			    user.Points -= Bestallning.POINTS_FOR_FREE_FOOD;
+
 		    await dbContext.SaveChangesAsync();
 
 			// Reset cart

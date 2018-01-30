@@ -12,7 +12,7 @@ namespace NackademinUppgift07.DataModels
     public partial class Bestallning
     {
 		public const int POINTS_FOR_FREE_FOOD = 100;
-	    public const int POINTS_FOR_PIZZA_ORDER = 10;
+	    public const int POINTS_PER_MATRATT = 10;
 	    public const decimal PREMIUM_DISCOUNT = 0.2m;
 
         public Bestallning()
@@ -44,7 +44,7 @@ namespace NackademinUppgift07.DataModels
 			
 		    OrdinalBelopp = BestallningMatratt.Sum(bm => bm.Antal * bm.Matratt.Pris);
 
-		    GratisPizzaPris = kundPoints + TotalCount * POINTS_FOR_PIZZA_ORDER >= POINTS_FOR_FREE_FOOD
+		    GratisPizzaPris = kundPoints + TotalCount * POINTS_PER_MATRATT >= POINTS_FOR_FREE_FOOD
 				? BestallningMatratt.Min(bm => bm.Matratt.Pris)
 				: 0;
 
