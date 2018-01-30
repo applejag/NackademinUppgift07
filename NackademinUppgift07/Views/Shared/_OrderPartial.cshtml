@@ -43,7 +43,16 @@
 		</tr>
 		<tr>
 			<th colspan="3">Poäng</th>
-			<th><span class="badge badge-light">+@(Bestallning.POINTS_PER_MATRATT * Model?.TotalCount ?? 0) poäng</span></th>
+			<th>
+				@{
+					int poäng = Bestallning.POINTS_PER_MATRATT * Model?.TotalCount ?? 0;
+				}
+				@if (Model?.GratisPizzaPris > 0)
+				{
+					poäng -= Bestallning.POINTS_FOR_FREE_FOOD;
+				}
+				<span class="badge badge-light">@(poäng >= 0 ? "+" : "")@poäng poäng</span>
+			</th>
 		</tr>
 		@if (Model?.GratisPizzaPris > 0)
 		{
