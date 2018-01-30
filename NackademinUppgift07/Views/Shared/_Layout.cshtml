@@ -8,6 +8,7 @@
 	List<MatrattTyp> matrattTypes = await MatrattRepository.GetMatrattTypesAsync();
 	int cartCount = cartManager.SavedCart.TotalCount;
 	string message = ViewData["Message"] as string ?? TempData["Message"] as string;
+	ApplicationUser AppUser = await UserManager.GetUserAsync(User);
 }
 
 @functions
@@ -57,7 +58,7 @@
 
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="javascript:void(0);" id="kontoDropdown"
-			   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@((await UserManager.GetUserAsync(User))?.DisplayName ?? "Konto")</a>
+			   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@(AppUser?.DisplayName ?? "Konto")</a>
 			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="kontoDropdown">
 				@if (SignInManager.IsSignedIn(User))
 				{
@@ -82,9 +83,23 @@
 			</div>
 		</li>
 
+
 	</ul>
 
-	@*<span class="navbar-text badge badge-pill badge-light text-dark">@ViewData["Title"]</span>*@
+	@if (AppUser != null)
+	{
+		<div class="navbar-text text-center" style="width: 12em;">
+			Poäng @AppUser.Points / @Bestallning.POINTS_FOR_FREE_FOOD
+			<div class="progress">
+				<div class="progress-bar bg-secondary"
+				     style="width: @(100 * AppUser.Points / (float) Bestallning.POINTS_FOR_FREE_FOOD)%"
+				     role="progressbar"
+				     aria-valuenow="@AppUser.Points"
+				     aria-valuemin="0"
+				     aria-valuemax="100">@AppUser.Points / @Bestallning.POINTS_FOR_FREE_FOOD</div>
+			</div>
+		</div>
+	}
 </nav>
 	<header>
 		<h1>Tomasos</h1>
