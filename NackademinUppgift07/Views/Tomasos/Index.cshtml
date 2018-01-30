@@ -83,20 +83,20 @@ else
 			<div class="mat-head">
 				<h2 class="mat-name">@mat.MatrattNamn <span class="mat-type">@mat.MatrattTypNavigation.Beskrivning</span>
 				</h2>
-				<div class="mat-head-right">
-					<div class="mat-price">@mat.Pris.ToString("C")</div>
-					<div class="mat-add">
-						<button type="button" class="btn btn-info btn-sm"
+				<div class="mat-head-right text-right">
+					<div class="h4 m-0">
+					<span class="mat-price"><span class="badge badge-secondary p-1">@mat.Pris.ToString("C")</span>
+					</span>
+						<button type="button" class="btn btn-info badge h3 p-1"
 						        data-trigger="manual"
 						        data-toggle="popover"
-								onclick="AddToCartAjax(this, @mat.MatrattId, '@mat.MatrattNamn')">Lägg till i kundvagn</button>
+						        onclick="AddToCartAjax(this, @mat.MatrattId, '@mat.MatrattNamn')">Lägg till i kundvagn</button>
+					</div>
+					<div class="mat-add">
 						@if (User.IsInRole(UserRole.Admin))
 						{
-
-							<br/>
-							<a asp-controller="Admin" asp-action="AlterPizza" asp-route-id="@mat.MatrattId">Ändra maträtt</a>
-							<br/>
-							<a asp-controller="Admin" asp-action="RemovePizza" asp-route-id="@mat.MatrattId">Ta bort</a> 
+							<a class="btn btn-warning badge" asp-controller="Admin" asp-action="AlterPizza" asp-route-id="@mat.MatrattId"> Ändra</a>
+							<a class="btn btn-danger badge" asp-controller="Admin" asp-action="RemovePizza" asp-route-id="@mat.MatrattId">Ta bort</a>
 						}
 					</div>
 				</div>
