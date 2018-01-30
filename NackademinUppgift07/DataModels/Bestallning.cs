@@ -50,7 +50,7 @@ namespace NackademinUppgift07.DataModels
 
 		    Rabatt = kundPremium ? PREMIUM_DISCOUNT : 0;
 
-		    Totalbelopp = OrdinalBelopp * (1m - Rabatt) - GratisPizzaPris;
+		    Totalbelopp = (OrdinalBelopp - GratisPizzaPris) * (1m - Rabatt);
 	    }
     }
 }
