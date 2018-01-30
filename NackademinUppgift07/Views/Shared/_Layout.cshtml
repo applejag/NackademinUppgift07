@@ -1,11 +1,20 @@
 ﻿@inject ICartManager cartManager
 @inject MatrattRepository MatrattRepository
 @inject SignInManager<ApplicationUser> signInManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
 @{
 	List<MatrattTyp> matrattTypes = await MatrattRepository.GetMatrattTypesAsync();
 	int cartCount = cartManager.SavedCart.TotalCount;
 	string message = ViewData["Message"] as string ?? TempData["Message"] as string;
+}
+
+@functions
+{
+	public string GetAntiXsrfRequestToken()
+	{
+		return Xsrf.GetAndStoreTokens(Context).RequestToken;
+	}
 }
 
 <!DOCTYPE html>
@@ -17,92 +26,118 @@
 	<title>@ViewData["Title"] - Tomasos</title>
 
 	<link asp-href-include="css/*.css" rel="stylesheet" />
-	
+
 	<environment names="Development">
 		<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 	</environment>
 	<environment names="Staging,Production">
 		<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
-		      asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-		      asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+			  asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+			  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
 	</environment>
 </head>
 <body>
-<header>
-	<h1>Tomasos</h1>
-	<h2>@ViewData["Title"]</h2>
-</header>
-<nav>
-	<ul>
-		<li><a asp-controller="Tomasos" asp-action="Index" asp-route-beskrivning="">Alla</a></li>
-		@foreach (MatrattTyp type in matrattTypes)
+	<header>
+		<h1>Tomasos</h1>
+		<h2>@ViewData["Title"]</h2>
+	</header>
+	<nav>
+		<ul>
+			<li><a asp-controller="Tomasos" asp-action="Index" asp-route-beskrivning="">Alla</a></li>
+			@foreach (MatrattTyp type in matrattTypes)
+			{
+				<li><a asp-controller="Tomasos" asp-action="Category" asp-route-beskrivning="@type.Beskrivning">@type.Beskrivning</a></li>
+			}
+		</ul>
+		<ul>
+			<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (<span id="cartSize">@cartCount rätt@(cartCount == 1 ? "" : "er")</span>)</a></li>
+			@if (signInManager.IsSignedIn(User))
+			{
+				<li><a asp-controller="Account" asp-action="Index">Min profil</a></li>
+				<li><a asp-controller="Tomasos" asp-action="ListOrders">Mina beställningar</a></li>
+				<li><a asp-controller="Account" asp-action="Logout">Logga ut</a></li>
+			}
+			else
+			{
+				<li><a asp-controller="Account" asp-action="Login">Logga in</a></li>
+				<li><a asp-controller="Account" asp-action="Register">Registrera ny kund</a></li>
+			}
+		</ul>
+
+		@if (signInManager.IsSignedIn(User) && User.IsInRole(UserRole.Admin))
 		{
-			<li><a asp-controller="Tomasos" asp-action="Category" asp-route-beskrivning="@type.Beskrivning">@type.Beskrivning</a></li>
+			<ul>
+				<li><a asp-controller="Admin" asp-action="Index">Admin</a></li>
+				<li><a asp-controller="Admin" asp-action="CreatePizza">Ny maträtt</a></li>
+				<li><a asp-controller="Admin" asp-action="AlterProducts">Hantera ingredienser</a></li>
+				<li><a asp-controller="Admin" asp-action="ListUsers">Hantera användare</a></li>
+				<li><a asp-controller="Admin" asp-action="ListOrders">Hantera besällningar</a></li>
+			</ul>
 		}
-	</ul>
-	<ul>
-		<li><a asp-controller="Tomasos" asp-action="ViewCart">Kundvagn (<span id="cartSize">@cartCount rätt@(cartCount == 1 ? "" : "er")</span>)</a></li>
-		@if (signInManager.IsSignedIn(User))
+	</nav>
+	<article>
+
+		@if (!string.IsNullOrEmpty(message))
 		{
-			<li><a asp-controller="Account" asp-action="Index">Min profil</a></li>
-			<li><a asp-controller="Tomasos" asp-action="ListOrders">Mina beställningar</a></li>
-			<li><a asp-controller="Account" asp-action="Logout">Logga ut</a></li>
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+				<strong>@message</strong>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
 		}
-		else
-		{
-			<li><a asp-controller="Account" asp-action="Login">Logga in</a></li>
-			<li><a asp-controller="Account" asp-action="Register">Registrera ny kund</a></li>
-		}
-	</ul>
-	
-	@if (signInManager.IsSignedIn(User) && User.IsInRole(UserRole.Admin))
+
+		@RenderBody()
+	</article>
+
+	<environment names="Development">
+		<script src="~/lib/jquery/dist/jquery.js"></script>
+		<script src="~/lib/popper.js/dist/umd/popper.min.js"></script>
+		<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+		<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+	</environment>
+	<environment names="Staging,Production">
+		<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+				asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+				asp-fallback-test="window.jQuery">
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+				integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+				crossorigin="anonymous"></script>
+		<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+				asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+				asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+		</script>
+		<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+	</environment>
+
+	@if (User.IsInRole(UserRole.Admin))
 	{
-	<ul>
-		<li><a asp-controller="Admin" asp-action="Index">Admin</a></li>
-		<li><a asp-controller="Admin" asp-action="CreatePizza">Ny maträtt</a></li>
-		<li><a asp-controller="Admin" asp-action="AlterProducts">Hantera ingredienser</a></li>
-		<li><a asp-controller="Admin" asp-action="ListUsers">Hantera användare</a></li>
-	</ul>
-	}
-</nav>
-<article>
-	
-	@if (!string.IsNullOrEmpty(message))
-	{
-		<div class="alert alert-warning alert-dismissible fade show" role="alert">
-			<strong>@message</strong>
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
-	}
+	<script type="text/javascript">
+			function ChangeBestallningLevererad(elem, id) {
+				$.ajax({
+					type: "post",
+					dataType: "json",
+					header: {
+						"RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+					},
+					url: '@Url.Action("ToggleOrderLevererad", "Admin")?id=' + id,
+					success: function (result) {
+						console.log(result);
 
-	@RenderBody()
-</article>
-	
-	
-
-<environment names="Development">
-	<script src="~/lib/jquery/dist/jquery.js"></script>
-	<script src="~/lib/popper.js/dist/umd/popper.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-	<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
-</environment>
-<environment names="Staging,Production">
-	<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-	        asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-	        asp-fallback-test="window.jQuery">
+						if (result.success)
+							$(elem).html('<span class="badge text-uppercase '
+								+ (result.levererad ? "badge-success" : "badge-danger") + '">'
+								+ (result.levererad ? "Ja" : "Nej") + '</span>');
+					},
+					error: function(err, scnd) {
+						console.error(err);
+					}
+				});
+			}
 	</script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-	        crossorigin="anonymous"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
-	        asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-	        asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
-	</script>
-	<script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
-</environment>
+	}
 
-@RenderSection("Scripts", required: false)
+	@RenderSection("Scripts", required: false)
 </body>
 </html>

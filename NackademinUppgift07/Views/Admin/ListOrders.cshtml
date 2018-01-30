@@ -1,0 +1,42 @@
+﻿@using Microsoft.EntityFrameworkCore
+@inject TomasosContext dbContext;
+@{
+    ViewData["Title"] = "Administrera besällningar";
+	List<ApplicationUser> allUsers = await dbContext.Users
+		.Include(u => u.Bestallning)
+			.ThenInclude(b => b.BestallningMatratt)
+			.ThenInclude(bm => bm.Matratt)
+			.ThenInclude(m => m.MatrattTypNavigation)
+		.Include(u => u.Bestallning)
+			.ThenInclude(b => b.BestallningMatratt)
+			.ThenInclude(bm => bm.Matratt)
+			.ThenInclude(m => m.MatrattProdukt)
+			.ThenInclude(mp => mp.Produkt)
+		.ToListAsync();
+}
+
+@foreach (ApplicationUser user in allUsers)
+{
+	<section>
+		<h2>@user.DisplayName <span class="badge badge-info">@user.UserName</span>
+		</h2>
+		@if (user.Bestallning.Count == 0)
+		{
+			<p><i>Detta konto har inga tidigare beställningar.</i>
+			</p>
+		}
+		else
+		{
+			string collapseId = "orders-for-" + user.NormalizedUserName.ToLower();
+			<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+				Visa @user.Bestallning.Count beställning(ar)
+			</button>
+			<div class="collapse" id="@collapseId">
+				@foreach (Bestallning bestallning in user.Bestallning.OrderByDescending(b => b.BestallningDatum))
+				{
+					await Html.RenderPartialAsync("_OrderPartial", bestallning);
+				}
+			</div>
+		}
+	</section>
+}
