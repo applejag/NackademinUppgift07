@@ -33,8 +33,8 @@
 	</form>
 </section>
 
-<section>
-	<table>
+<section class="table-responsive">
+	<table class="table">
 		<thead>
 		<tr>
 			<th colspan="2">Ingredienser</th>
@@ -53,15 +53,17 @@
 			{
 				<tr>
 					<td>@produkt.ProduktNamn</td>
-					<td>
-						<a asp-action="AlterProducts" asp-route-id="@produkt.ProduktId">Ändra</a>
+					<td class="text-right">
+						<a class="btn btn-primary btn-sm" asp-action="AlterProducts" asp-route-id="@produkt.ProduktId">Ändra</a>
 						@if (produkt.MatrattProdukt.Count > 0)
 						{
-							<a class="disabled" title="Ingrediensen används i @string.Join(", ", produkt.MatrattProdukt.Select(mp => mp.Matratt.MatrattNamn))">Ta bort</a>
+							<span title="Ingrediensen används i @string.Join(", ", produkt.MatrattProdukt.Select(mp => mp.Matratt.MatrattNamn))">
+						<a class="btn btn-secondary btn-sm disabled" >Ta bort</a>
+							</span>
 						}
 						else
 						{
-							<a asp-action="RemoveProduct" asp-route-id="@produkt.ProduktId">Ta bort</a>
+							<a class="btn btn-danger btn-sm" asp-action="RemoveProduct" asp-route-id="@produkt.ProduktId">Ta bort</a>
 						}
 					</td>
 				</tr>

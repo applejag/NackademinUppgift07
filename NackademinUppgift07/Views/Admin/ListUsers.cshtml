@@ -7,15 +7,12 @@
 	List<ApplicationUser> allUsers = await TomasosContext.Users.ToListAsync();
 }
 
-<section>
-	<table>
+<section class="table-responsive">
+	<table class="table">
 		<thead>
 		<tr>
-			<th></th>
-			<th>Namn</th>
-			<th>Epost</th>
-			<th>Roll</th>
-			<th>Åtgärd</th>
+			<th>Användare</th>
+			<th class="text-right">Åtgärd</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -32,10 +29,9 @@
 			}
 
 			<tr>
-				<td><span class="badge badge-info">@user.UserName</span></td>
-				<td>@user.DisplayName</td>
-				<td>@user.Email</td>
 				<td>
+					@user.DisplayName<br/>
+					<span class="badge badge-light">@user.UserName</span>
 					@if (role == UserRole.Admin)
 					{
 						<span class="badge badge-success">Admin</span>
@@ -46,10 +42,12 @@
 					}
 					else
 					{
-						<span class="badge badge-info">Regular</span>
+						<span class="badge badge-secondary">Regular</span>
 					}
+					<br/>
+					<span class="badge badge-light">@user.Email</span>
 				</td>
-				<td>
+				<td class="text-right">
 					@if (role == UserRole.Admin)
 					{
 						<i>(saknar behörighet)</i>
@@ -58,13 +56,13 @@
 					{
 						if (role == UserRole.PremiumUser)
 						{
-							<a asp-action="DemoteUser" asp-route-id="@user.Id">&dArr; Gör till @nameof(UserRole.RegularUser)</a>
+							<a class="btn btn-secondary btn-sm" asp-action="DemoteUser" asp-route-id="@user.Id">&dArr; Gör till @nameof(UserRole.RegularUser)</a>
 						}
 						else
 						{
-							<a asp-action="PromoteUser" asp-route-id="@user.Id">&uArr; Gör till @nameof(UserRole.PremiumUser)</a>
+							<a class="btn btn-primary btn-sm" asp-action="PromoteUser" asp-route-id="@user.Id">&uArr; Gör till @nameof(UserRole.PremiumUser)</a>
 						}
-						<br/><a asp-action="RemoveUser" asp-route-id="@user.Id">&times; Ta bort</a>
+						<a class="btn btn-danger btn-sm" asp-action="RemoveUser" asp-route-id="@user.Id">&times; Ta bort</a>
 					}
 				</td>
 			</tr>

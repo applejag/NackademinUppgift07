@@ -27,7 +27,7 @@
 						<span class="cart-number">@group.Antal st</span>
 						@if (Model.Kund == null)
 						{
-							<a asp-action="RemoveFromCart" asp-route-id="@group.MatrattId">Ta bort en</a>
+							<a asp-action="RemoveFromCart" asp-controller="Tomasos" asp-route-id="@group.MatrattId">Ta bort en</a>
 						}
 					</td>
 					<td class="cart-number">@group.Matratt.Pris.ToString("C")</td>
@@ -41,18 +41,22 @@
 			<th colspan="3">Total antal</th>
 			<th><span class="badge badge-light">@(Model?.TotalCount ?? 0) st</span></th>
 		</tr>
-		@if (Model?.Rabatt > 0.01m)
-		{
-			<tr>
-				<th colspan="3">Premium rabatt</th>
-				<th><span class="badge badge-success">@((-Model?.Rabatt ?? 0).ToString("P0"))</span></th>
-			</tr>
-		}
+		<tr>
+			<th colspan="3">Poäng</th>
+			<th><span class="badge badge-light">+@(Bestallning.POINTS_FOR_PIZZA_ORDER * Model?.TotalCount ?? 0) poäng</span></th>
+		</tr>
 		@if (Model?.GratisPizzaPris > 0)
 		{
 			<tr>
 				<th colspan="3">100 poäng rabatt</th>
 				<th><span class="badge badge-success">@((-Model?.GratisPizzaPris ?? 0).ToString("C"))</span></th>
+			</tr>
+		}
+		@if (Model?.Rabatt > 0.01m)
+		{
+			<tr>
+				<th colspan="3">Premium rabatt</th>
+				<th><span class="badge badge-success">@((-Model?.Rabatt ?? 0).ToString("P0"))</span></th>
 			</tr>
 		}
 		<tr><td>&nbsp;</td></tr>
@@ -81,12 +85,12 @@
 			<tr>
 				<th colspan="3">Levererad</th>
 				<th>
-					<div id="bestallning-@Model.BestallningId-levererad">
+					<span id="bestallning-@Model.BestallningId-levererad">
 						<span class="badge text-uppercase @(Model.Levererad ? "badge-success" : "badge-danger")">@(Model.Levererad ? "Ja" : "Nej")</span>
-					</div>
+					</span>
 					@if (User.IsInRole(UserRole.Admin))
 					{
-						<button class="btn btn-sm btn-primary" type="button" onclick="ChangeBestallningLevererad('#bestallning-@Model.BestallningId-levererad', '@Model.BestallningId')">Ändra</button>
+						<button class="btn badge btn-primary" type="button" onclick="ChangeBestallningLevererad('#bestallning-@Model.BestallningId-levererad', '@Model.BestallningId')">Ändra</button>
 					}
 				</th>
 			</tr>
