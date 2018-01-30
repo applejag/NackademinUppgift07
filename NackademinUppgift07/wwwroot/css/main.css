@@ -10,18 +10,7 @@ body {
 	background: url("/images/pizza-bg.jpg") repeat top;
 }
 
-a {
-	text-decoration: none;
-	border-bottom: 1px dotted navy;
-	color: navy;
-}
-
-a:hover {
-	border-bottom: 1px solid blue;
-	color: blue;
-}
-
-article, header, nav {
+article, header {
 	margin: 1em auto;
 	border-radius: 1em;
 	width: 90%;
@@ -34,10 +23,6 @@ article, header {
 	border-bottom: 2px solid gray;
 }
 
-article {
-	margin-top: 0;
-}
-
 section, fieldset {
 	border: 1px solid lightgray;
 	border-bottom: 4px solid lightgray;
@@ -48,7 +33,6 @@ section, fieldset {
 
 header {
 	text-align: center;
-	margin-bottom: 0;
 }
 
 header > h1 {
@@ -61,64 +45,6 @@ header > h2 {
 	margin: 0;
 }
 
-nav {
-	margin: 0 auto;
-	padding: 0 1em;
-}
-
-nav > ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-	text-align: center;
-}
-
-nav > ul:first-child {
-	margin-top: -1em;
-}
-
-nav > ul:first-child > li > a {
-	margin-top: 0;
-	border-bottom: 2px solid navy;
-}
-
-nav > ul:first-child > li > a:hover {
-	border-bottom: 2px solid blue;
-}
-
-nav > ul:last-child {
-	margin-bottom: -1em;
-}
-
-nav > ul:last-child > li > a {
-	margin-bottom: 0;
-	border-top: 2px solid navy;
-}
-
-nav > ul:last-child > li > a:hover {
-	border-top: 2px solid blue;
-}
-
-nav > ul > li {
-	display: inline;
-}
-
-nav > ul > li > a {
-	display: inline-block;
-	background-color: white;
-	padding: 0.5em 1em;
-	margin: 0.5em 0;
-	border-radius: 1em;
-	text-decoration: none;
-	color: navy;
-	border-bottom: none;
-}
-
-nav > ul > li > a:hover {
-	color: blue;
-	border-bottom: none;
-}
-
 .big {
 	font-size: x-large;
 	font-weight: 600;
@@ -127,4 +53,15 @@ nav > ul > li > a:hover {
 .mono {
 	font-family: monospace;
 	
+}
+
+.navbar .divider-vertical {
+	width: 0;
+	margin: 0 0.5rem;
+	overflow: hidden;
+	border-left: 1px solid #e9ecef;
+}
+
+.navbar.navbar-dark .divider-vertical {
+	border-left: 1px solid #666;
 }
